@@ -18,10 +18,12 @@ export const GameBoard = () => {
   const board = [];
   const rows = 10;
   const cols = 10;
-  const hits = [];
-  const misses = [];
+  const ships = [];
+  let hits = 0;
+  let misses = 0;
+  generateBoard();
 
-  const generateBoard = () => {
+  function generateBoard() {
     for (let i = 0; i < rows; i++) {
       const row = [];
       board.push(row);
@@ -30,12 +32,12 @@ export const GameBoard = () => {
         row.push(col);
       }
     }
+  }
 
-    return board;
-  };
+  const returnBoard = () => board;
 
   const findCellAtCoordinates = (x, y) => {
-    for (let row of generateBoard()) {
+    for (let row of board) {
       for (let boardCell of row) {
         const cell = boardCell[0];
         if (x === cell.x && y === cell.y) return cell;
@@ -47,11 +49,12 @@ export const GameBoard = () => {
     if (!(head instanceof Array) || !(tail instanceof Array))
       throw Error('head and tail must be arrays representing coordinates!');
 
+    let ship;
     const shipCells = [];
     let direction = 'invalid';
     let shipLength;
 
-    if (head[0] === tail[0] && head[1] === tail[1]) direction = 'single-cell'
+    if (head[0] === tail[0] && head[1] === tail[1]) direction = 'single-cell';
     else if (head[0] === tail[0]) direction = 'vertical';
     else if (head[1] === tail[1]) direction = 'horizontal';
 
@@ -62,37 +65,66 @@ export const GameBoard = () => {
 
     if (direction === 'invalid') return false;
     else if (direction === 'single-cell') {
+      ship = Ship(1);
+      ships.push(ship);
       // case of single-cell boat, remove the double coordinate from arr
       shipCells.shift();
     } else if (direction === 'horizontal') {
       shipLength = Math.abs(head[0] - tail[0]) + 1;
+      ship = Ship(shipLength);
+      ships.push(ship);
       const cellNumberNotFound = shipLength - 2;
       // calculate the cells missing to complete the boat
       for (let i = 1; i <= cellNumberNotFound; i++) {
         const fixedCoord = head[1];
         const variableCoord = Math.max(head[0], tail[0]);
-        const cellInBetween = findCellAtCoordinates(variableCoord - i, fixedCoord);
+        const cellInBetween = findCellAtCoordinates(
+          variableCoord - i,
+          fixedCoord
+        );
         shipCells.push(cellInBetween);
       }
     } else if (direction === 'vertical') {
       shipLength = Math.abs(head[1] - tail[1]) + 1;
+      ship = Ship(shipLength);
+      ships.push(ship);
       const cellNumberNotFound = shipLength - 2;
       for (let i = 1; i <= cellNumberNotFound; i++) {
         const fixedCoord = head[0];
-        const variableCoord = Math.max(tail[1], tail[0])
-        const cellInBetween = findCellAtCoordinates(fixedCoord, variableCoord + i);
+        const variableCoord = Math.max(tail[1], tail[0]);
+        const cellInBetween = findCellAtCoordinates(
+          fixedCoord,
+          variableCoord + i
+        );
         shipCells.push(cellInBetween);
       }
     }
 
-    return shipCells;
+    shipCells.forEach((cell) => (cell.heldShip = ship));
+    return ship;
   };
 
-  const receiveAttack = (x, y) => {};
+  const receiveAttack = (x, y) => {
+    const attackedCell = findCellAtCoordinates(x, y);
+    attackedCell.isHit = true;
 
-  const gameOver = () => {};
+    if (attackedCell.heldShip !== null) {
+      hits++;
+      checkGameOver();
+    } else misses++;
+  };
 
-  return { generateBoard, placeShip, receiveAttack, gameOver };
+  const checkGameOver = () => {
+    const cellNumberHoldingBoats = ships.reduce(
+      (total, ship) => (total += ship.length),
+      0
+    );
+
+    if (hits >= cellNumberHoldingBoats) console.log('Game Over');
+    else console.log('Game Continues')
+  };
+
+  return { placeShip, receiveAttack, returnBoard };
 };
 
 function Cell(x, y) {
@@ -104,6 +136,10 @@ function Cell(x, y) {
 
 const board = GameBoard();
 
-board.generateBoard();
+console.log(board.placeShip([1, 1], [5, 1]));
 
-console.log(board.placeShip([1, 1], [4, 1]));
+board.receiveAttack(1, 1);
+board.receiveAttack(2, 1);
+board.receiveAttack(3, 1);
+board.receiveAttack(4, 1);
+board.receiveAttack(5, 1);
