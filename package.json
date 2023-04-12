@@ -1,12 +1,12 @@
 {
   "name": "battleship",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "webpack --watch --progress",
-    "build": "webpack --progress"
+    "build": "webpack --progress",
+    "jest": "jest --watchAll"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +16,14 @@
     "jest": "^29.5.0",
     "webpack": "^5.78.0",
     "webpack-cli": "^5.0.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrustInMagic/battleship.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TrustInMagic/battleship/issues"
+  },
+  "homepage": "https://github.com/TrustInMagic/battleship#readme",
+  "description": ""
 }
