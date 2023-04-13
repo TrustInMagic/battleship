@@ -1,0 +1,175 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  font-family: pirateship;
+}
+
+:root {
+  --font-red: #f12711;
+  --stone-white: #f5f5f4;
+}
+
+@font-face {
+  font-family: treasure-font;
+  src: url(./assets/fonts/treasurehunt-font/TreasurehuntPersonalUseRegular-3zKgp.otf);
+}
+
+@font-face {
+  font-family: pirateship;
+  src: url(./assets/fonts/pirateship-font/Pirateship-MV8le.ttf);
+}
+
+/* landing-section */
+
+.landing {
+  background: url(./assets/landing-page-background.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.landing h1 {
+  margin-top: 10px;
+  font-size: 5rem;
+  font-family: treasure-font;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.game-start {
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  width: 200px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.game-start input {
+  font-family: inherit;
+  font-size: 100%;
+  height: 50px;
+  width: 250px;
+  background: transparent;
+  border: none;
+  border-bottom: var(--font-red) solid 1px;
+  color: var(--font-red);
+  font-weight: 600;
+  font-size: 1.3rem;
+  padding: 0px 5px;
+  outline: none;
+}
+
+.game-start input::placeholder {
+  color: var(--font-red);
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.game-start button {
+  height: 40px;
+  width: 250px;
+  cursor: pointer;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  border-radius: 8px;
+  border: none;
+  box-shadow: 2px 2px 40px;
+  color: var(--stone-white);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.game-start button:hover {
+  background: linear-gradient(to right, #bdc3c7, #2c3e50);
+  background-color: white;
+  color: var(--font-red);
+}
+
+.game-start button:active {
+  transform: scale(0.96);
+  transition: transform 0.3s;
+}
+
+/* ship-placement */
+
+.ship-placement {
+  background-image: url(./assets/landing-page-background.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  display: none;
+  
+}
+
+.background-swap {
+  background-image: linear-gradient(to right, #334d50, #cbcaa5, #334d50);
+  transition: background-image 1s ease-in-out;
+}
+
+.ship-placement h1 {
+  margin-top: 10px;
+  font-size: 3rem;
+  font-family: treasure-font;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ship-to-place {
+  margin-top: 50px;
+  color: var(--font-red);
+  font-weight: 900;
+  font-size: 1.6rem;
+}
+
+.ship-placement button {
+  margin-top: 20px;
+  height: 40px;
+  width: 100px;
+  cursor: pointer;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  border-radius: 8px;
+  border: none;
+  box-shadow: 2px 2px 40px;
+  color: var(--stone-white);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* game-board */
+
+.ship-placement .game-board {
+  margin-top: 20px;
+  height: 500px;
+  width: 500px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 1px;
+}
+
+.board-cell {
+  border: solid var(--stone-white) 1px;
+  cursor: pointer;
+}
+

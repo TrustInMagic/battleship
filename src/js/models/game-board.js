@@ -144,7 +144,7 @@ export const GameBoard = () => {
     else console.log('Game Continues');
   };
 
-  return { placeShip, receiveAttack, returnBoard };
+  return { placeShip, receiveAttack, returnBoard, findCellAtCoordinates };
 };
 
 
