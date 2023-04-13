@@ -145,7 +145,7 @@ body {
 .ship-placement button {
   margin-top: 20px;
   height: 40px;
-  width: 100px;
+  width: 200px;
   cursor: pointer;
   background: linear-gradient(to right, #f12711, #f5af19);
   border-radius: 8px;
