@@ -16,7 +16,7 @@ describe('Ship', () => {
   });
 });
 
-describe('GameBoard', () => {
+describe('GameBoard.returnBoard', () => {
   let board;
 
   beforeEach(() => {
@@ -44,24 +44,41 @@ describe('GameBoard', () => {
       }
     }
   });
+});
 
-  describe('gameBoard.placeShip', () => {
-    let board;
+describe('GameBoard.placeShip', () => {
+  let board;
 
-    beforeEach(() => {
-      board = GameBoard();
-    });
+  beforeEach(() => {
+    board = GameBoard();
+  });
 
-    test('placeShip places ships correctly on horizontal', () => {
-      expect(board.placeShip([1, 1], [6, 1]).length).toEqual(6);
-    });
+  test('placeShip places ships correctly on horizontal', () => {
+    expect(board.placeShip([1, 1], [6, 1]).length).toEqual(6);
+  });
 
-    test('placeShip places ships correctly on vertical', () => {
-      expect(board.placeShip([1, 4], [1, 1]).length).toEqual(4);
-    });
+  test('placeShip places ships correctly on vertical', () => {
+    expect(board.placeShip([1, 4], [1, 1]).length).toEqual(4);
+  });
 
-    test('placeShip places ships correctly in case of single-cell ship', () => {
-      expect(board.placeShip([1, 1], [1, 1]).length).toEqual(1);
-    });
+  test('placeShip places ships correctly in case of single-cell ship', () => {
+    expect(board.placeShip([1, 1], [1, 1]).length).toEqual(1);
+  });
+});
+
+describe('GameBoard.receiveAttack', () => {
+  let board;
+
+  beforeEach(() => {
+    board = GameBoard();
+  });
+
+  test('correctly signals game over when all ships have been sunk', () => {
+    board.placeShip([1, 1], [5, 1])
+    board.receiveAttack(1, 1);
+    board.receiveAttack(2, 1);
+    board.receiveAttack(3, 1);
+    board.receiveAttack(4, 1);
+    expect(board.receiveAttack(5, 1)).toBe(true);
   });
 });
