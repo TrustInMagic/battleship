@@ -4,11 +4,41 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="../src/style.css">
+    <link rel="stylesheet" href="../src/style.css" />
     <script src="./bundle.js" defer></script>
-    <title>Battleship</title>
+    <title>Cannon Clash</title>
   </head>
   <body>
-
+    <div class="landing">
+      <div class="title">
+        <h1>Cannon Clash</h1>
+        <div class="sound">
+          <img src="" />
+        </div>
+      </div>
+      <form class="game-start">
+        <input
+          type="text"
+          name="player-name"
+          id="player-name"
+          placeholder="Name, ye swab!"
+          required
+        />
+        <button type="submit">Start Game</button>
+      </form>
+    </div>
+    <div class="ship-placement">
+      <div class="title">
+        <h1>Cannon Clash</h1>
+        <div class="sound">
+          <img src="" />
+        </div>
+      </div>
+      <div class="ship-to-place">
+        <span class="player-name"></span>, place your <span class="ship"></span>:
+      </div>
+      <button>Axis: <span class="axis">X</span></button>
+      <div class="game-board"></div>
+    </div>
   </body>
 </html>
