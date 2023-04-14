@@ -4,15 +4,16 @@ import {
   switchSection,
   transitionBackground,
   attemptShipPlacementDom,
+  placeShipDom,
 } from './dom/dom-methods';
 
 const playGame = (() => {
   const startForm = document.querySelector('.game-start');
 
-  startForm.addEventListener('submit', runShipPlacement);
+  startForm.addEventListener('submit', runShipPlacementSection);
 })();
 
-function runShipPlacement(e) {
+function runShipPlacementSection(e) {
   e.preventDefault();
   switchSection('ship-placement');
   transitionBackground();
@@ -42,18 +43,40 @@ function runShipPlacement(e) {
   });
 
   const cellsDom = document.querySelectorAll('.board-cell');
-  let cellX;
-  let cellY;
 
   cellsDom.forEach((cell) => {
-    cell.addEventListener('mouseenter', () => {
-      cellX = cell.getAttribute('data-x');
-      cellY = cell.getAttribute('data-y');
-      const targetCell = boardObject.findCellAtCoordinates(
-        Number(cellX),
-        Number(cellY)
-      );
-      attemptShipPlacementDom('Frigate', axis, targetCell, boardObject);
-    });
+    cell.addEventListener('mouseenter', () =>
+      handleShipPlacement(cell, boardObject, axis)
+    );
   });
+}
+
+function handleShipPlacement(cell, boardObject, axis) {
+  const shipsToPlace = [
+    'Galleon',
+    'Frigate',
+    'Brigantine',
+    'Schooner',
+    'Sloop',
+  ];
+  let cellX;
+  let cellY;
+  cellX = cell.getAttribute('data-x');
+  cellY = cell.getAttribute('data-y');
+  const targetCell = boardObject.findCellAtCoordinates(
+    Number(cellX),
+    Number(cellY)
+  );
+  const shipData = attemptShipPlacementDom(
+    'Galleon',
+    axis,
+    targetCell,
+    boardObject
+  );
+  if (shipData?.shipHead !== undefined && shipData?.shipTail !== undefined) {
+    cell.addEventListener('click', () => {
+      boardObject.placeShip(shipData.shipHead, shipData.shipTail);
+      placeShipDom(shipData.allDomShipCells)
+    });
+  }
 }

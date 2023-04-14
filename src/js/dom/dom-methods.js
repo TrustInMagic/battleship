@@ -21,7 +21,7 @@ function clearDomCellInvalidity(cell) {
 }
 
 function clearDomCellsCustomColor(cells) {
-  cells.forEach((cell) => cell.classList.remove('place-ship'));
+  cells.forEach((cell) => cell.classList.remove('attempt-place-ship'));
 }
 
 function findDomCellAtCoordinates(x, y) {
@@ -118,11 +118,13 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
 
     const allDomShipCells = shipHeadDom.concat(shipTailDom).concat(restShipDom);
     allDomShipCells.forEach((cell) => {
-      cell.classList.add('place-ship');
+      cell.classList.add('attempt-place-ship');
       cell.addEventListener('mouseleave', () =>
         clearDomCellsCustomColor(allDomShipCells)
       );
     });
+
+    return { shipHead, shipTail, allDomShipCells };
   }
 }
 
@@ -140,3 +142,8 @@ export function transitionBackground() {
   const shipPlacement = document.querySelector('.ship-placement');
   shipPlacement.classList.add('background-swap');
 }
+
+export function placeShipDom(cells) {
+  cells.forEach((cell) => cell.classList.add('ship-placed'))
+}
+
