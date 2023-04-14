@@ -71,13 +71,17 @@ function runShipPlacement(e) {
 
 function clearDomCellInvalidity(cell) {
   cell.addEventListener('mouseleave', () => {
-    cell.classList.remove('invalid-location')
-  })
+    cell.classList.remove('invalid-location');
+  });
+}
+
+function clearDomCellsCustomColor(cells) {
+  cells.forEach((cell) => cell.classList.remove('place-ship'))
 }
 
 function findDomCellAtCoordinates(x, y) {
   const cellsDom = document.querySelectorAll('.board-cell');
-  let searchedCell 
+  let searchedCell;
 
   cellsDom.forEach((cell) => {
     const cellX = cell.getAttribute('data-x');
@@ -85,7 +89,7 @@ function findDomCellAtCoordinates(x, y) {
     if (Number(cellX) === x && Number(cellY) === y) searchedCell = cell;
   });
 
-  return searchedCell
+  return searchedCell;
 }
 
 function attemptShipPlacementDom(shipType, axis, cell, board) {
@@ -128,21 +132,48 @@ function attemptShipPlacementDom(shipType, axis, cell, board) {
   const shipHead = [cell.x, cell.y];
   let shipTailX;
   let shipTailY;
+  let direction;
 
   if (axis === 'horizontal') {
-    shipTailX = [shipHead[0] + length - 1];
-    shipTailY = [shipHead[1]];
+    shipTailX = shipHead[0] + length - 1;
+    shipTailY = shipHead[1];
+    direction = 'horizontal'
   } else if (axis === 'vertical') {
-    shipTailX = [shipHead[0]];
-    shipTailY = [shipHead[1] + length - 1];
+    shipTailX = shipHead[0];
+    shipTailY = shipHead[1] + length - 1;
+    direction = 'vertical'
   }
 
   const shipTail = [shipTailX, shipTailY];
-  const shipHeadDom = findDomCellAtCoordinates(...shipHead)
+  const restShipCells = [];
+  const shipHeadDom = [findDomCellAtCoordinates(...shipHead)];
+  const shipTailDom = [findDomCellAtCoordinates(...shipTail)];
+  const restShipDom = [];
 
   if (!board.checkBoatPlacementValidity(shipHead, shipTail)) {
-    shipHeadDom.classList.add('invalid-location');
-    clearDomCellInvalidity(shipHeadDom);
+    shipHeadDom[0].classList.add('invalid-location');
+    clearDomCellInvalidity(shipHeadDom[0]);
+  } else {
+    const missingCells = board.findMissingBoatCells(
+      shipHead,
+      shipTail,
+      length,
+      direction
+    );
+    restShipCells.push(...missingCells);
+
+    restShipCells.forEach((cell) => {
+      if (cell === undefined) return;
+      restShipDom.push(findDomCellAtCoordinates(cell.x, cell.y));
+    });
+
+    const allDomShipCells = shipHeadDom.concat(shipTailDom).concat(restShipDom);
+    allDomShipCells.forEach((cell) => {
+      cell.classList.add('place-ship');
+      cell.addEventListener('mouseleave', () =>
+        clearDomCellsCustomColor(allDomShipCells)
+      );
+    });
   }
 }
 

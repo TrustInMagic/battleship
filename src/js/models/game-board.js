@@ -61,36 +61,56 @@ export const GameBoard = () => {
       shipLength = Math.abs(head[0] - tail[0]) + 1;
       ship = Ship(shipLength);
       ships.push(ship);
-      const cellNumberNotFound = shipLength - 2;
-      // calculate the cells missing to complete the boat
-      for (let i = 1; i <= cellNumberNotFound; i++) {
-        const fixedCoord = head[1];
-        const variableCoord = Math.max(head[0], tail[0]);
-        const cellInBetween = findCellAtCoordinates(
-          variableCoord - i,
-          fixedCoord
-        );
-        shipCells.push(cellInBetween);
-      }
+      const restOfCells = findMissingBoatCells(
+        head,
+        tail,
+        shipLength,
+        'horizontal'
+      );
+      shipCells.push(...restOfCells);
     } else if (direction === 'vertical') {
       shipLength = Math.abs(head[1] - tail[1]) + 1;
       ship = Ship(shipLength);
       ships.push(ship);
-      const cellNumberNotFound = shipLength - 2;
-      for (let i = 1; i <= cellNumberNotFound; i++) {
-        const fixedCoord = head[0];
-        const variableCoord = Math.max(tail[1], tail[0]);
-        const cellInBetween = findCellAtCoordinates(
-          fixedCoord,
-          variableCoord + i
-        );
-        shipCells.push(cellInBetween);
-      }
+      const restOfCells = findMissingBoatCells(
+        head,
+        tail,
+        shipLength,
+        'vertical'
+      );
+      shipCells.push(...restOfCells)
     }
 
     shipCells.forEach((cell) => (cell.heldShip = ship));
     return shipCells;
   };
+
+  function findMissingBoatCells(head, tail, length, direction) {
+    const cellNumberNotFound = length - 2;
+    const restOfCells = [];
+    if (direction === 'horizontal') {
+      for (let i = 1; i <= cellNumberNotFound; i++) {
+        const fixedCoord = head[1];
+        const variableCoord = head[0];
+        const cellInBetween = findCellAtCoordinates(
+          variableCoord + i,
+          fixedCoord,
+        );
+        restOfCells.push(cellInBetween);
+      }
+    } else if (direction === 'vertical') {
+      for (let i = 1; i <= cellNumberNotFound; i++) {
+        const fixedCoord = head[0];
+        const variableCoord = head[1];
+        const cellInBetween = findCellAtCoordinates(
+          fixedCoord,
+          variableCoord + i
+        );
+        restOfCells.push(cellInBetween);
+      }
+    }
+    return restOfCells;
+  }
 
   const checkBoatPlacementValidity = (head, tail) => {
     if (
@@ -150,5 +170,6 @@ export const GameBoard = () => {
     returnBoard,
     findCellAtCoordinates,
     checkBoatPlacementValidity,
+    findMissingBoatCells
   };
 };

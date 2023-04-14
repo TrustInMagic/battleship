@@ -13,6 +13,7 @@ body {
   --font-red: #f12711;
   --stone-white: #f5f5f4;
   --invalid-location: #ef4444;
+  --place-ship: #22c55e;
 }
 
 @font-face {
@@ -177,5 +178,10 @@ body {
 .invalid-location {
   cursor: not-allowed;
   background-color: var(--invalid-location);
+  opacity: 50%;
+}
+
+.place-ship {
+  background-color: var(--place-ship);
   opacity: 50%;
 }
