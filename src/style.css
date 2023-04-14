@@ -12,6 +12,7 @@ body {
 :root {
   --font-red: #f12711;
   --stone-white: #f5f5f4;
+  --invalid-location: #ef4444;
 }
 
 @font-face {
@@ -173,3 +174,8 @@ body {
   cursor: pointer;
 }
 
+.invalid-location {
+  cursor: not-allowed;
+  background-color: var(--invalid-location);
+  opacity: 50%;
+}

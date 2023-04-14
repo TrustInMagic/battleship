@@ -7,49 +7,6 @@ const playGame = (() => {
   startForm.addEventListener('submit', runShipPlacement);
 })();
 
-function runShipPlacement(e) {
-  e.preventDefault();
-  switchSection('ship-placement');
-  transitionBackground();
-
-  const nameInput = document.querySelector('.game-start input');
-  const nameSpan = document.querySelector('.ship-to-place .player-name');
-  const axisButton = document.querySelector('.ship-placement button');
-  const axisDom = document.querySelector('.ship-placement .axis');
-
-  nameSpan.textContent = nameInput.value;
-
-  const firstCaptain = Player(nameInput.value);
-  const secondCaptain = Player('chat-GPT');
-  const boardObject = firstCaptain.playerBoard;
-  displayGameBoard(firstCaptain);
-  
-  let axis = 'horizontal';
-
-  axisButton.addEventListener('click', () => {
-    if (axis === 'horizontal') {
-      (axisDom.textContent = 'Vertical');
-      axis = 'vertical'
-    } else {
-      axisDom.textContent = 'Horizontal';
-      axis = 'horizontal'
-    }
-  });
-
-  const cellsDom = document.querySelectorAll('.board-cell');
-  let cellX;
-  let cellY;
-
-  cellsDom.forEach((cell) => {
-    cell.addEventListener('click', () => {
-      cellX = cell.getAttribute('data-x');
-      cellY = cell.getAttribute('data-y');
-      attemptShipPlacementDom('Galleon', axis)
-    });
-  });
-  
-}
-
 function displayGameBoard(player) {
   const board = player.playerBoard.returnBoard();
   const gameBoardDom = document.querySelector('.ship-placement .game-board');
@@ -66,11 +23,72 @@ function displayGameBoard(player) {
   }
 }
 
-function findDomCellAtCoordinates(x, y) {
+function runShipPlacement(e) {
+  e.preventDefault();
+  switchSection('ship-placement');
+  transitionBackground();
 
+  const nameInput = document.querySelector('.game-start input');
+  const nameSpan = document.querySelector('.ship-to-place .player-name');
+  const axisButton = document.querySelector('.ship-placement button');
+  const axisDom = document.querySelector('.ship-placement .axis');
+
+  nameSpan.textContent = nameInput.value;
+
+  const firstCaptain = Player(nameInput.value);
+  const secondCaptain = Player('chat-GPT');
+  const boardObject = firstCaptain.playerBoard;
+  displayGameBoard(firstCaptain);
+
+  let axis = 'horizontal';
+
+  axisButton.addEventListener('click', () => {
+    if (axis === 'horizontal') {
+      axisDom.textContent = 'Vertical';
+      axis = 'vertical';
+    } else {
+      axisDom.textContent = 'Horizontal';
+      axis = 'horizontal';
+    }
+  });
+
+  const cellsDom = document.querySelectorAll('.board-cell');
+  let cellX;
+  let cellY;
+
+  cellsDom.forEach((cell) => {
+    cell.addEventListener('mouseenter', () => {
+      cellX = cell.getAttribute('data-x');
+      cellY = cell.getAttribute('data-y');
+      const targetCell = boardObject.findCellAtCoordinates(
+        Number(cellX),
+        Number(cellY)
+      );
+      attemptShipPlacementDom('Galleon', axis, targetCell, boardObject);
+    });
+  });
 }
 
-function attemptShipPlacementDom(shipType, axis) {
+function clearDomCellInvalidity(cell) {
+  cell.addEventListener('mouseleave', () => {
+    cell.classList.remove('invalid-location')
+  })
+}
+
+function findDomCellAtCoordinates(x, y) {
+  const cellsDom = document.querySelectorAll('.board-cell');
+  let searchedCell 
+
+  cellsDom.forEach((cell) => {
+    const cellX = cell.getAttribute('data-x');
+    const cellY = cell.getAttribute('data-y');
+    if (Number(cellX) === x && Number(cellY) === y) searchedCell = cell;
+  });
+
+  return searchedCell
+}
+
+function attemptShipPlacementDom(shipType, axis, cell, board) {
   const ships = {
     Galleon: 5,
     Frigate: 4,
@@ -104,21 +122,28 @@ function attemptShipPlacementDom(shipType, axis) {
       break;
   }
 
-  const cellsDom = document.querySelectorAll('.board-cell');
-  let cellX;
-  let cellY;
-
-  cellsDom.forEach((cell) => {
-    cell.addEventListener('mouseenter', () => {
-      cellX = cell.getAttribute('data-x');
-      cellY = cell.getAttribute('data-y');
-
-      console.log(axis, length)
-    });
-  });
-
   const shipSpan = document.querySelector('.ship-to-place .ship');
   shipSpan.textContent = ship;
+
+  const shipHead = [cell.x, cell.y];
+  let shipTailX;
+  let shipTailY;
+
+  if (axis === 'horizontal') {
+    shipTailX = [shipHead[0] + length - 1];
+    shipTailY = [shipHead[1]];
+  } else if (axis === 'vertical') {
+    shipTailX = [shipHead[0]];
+    shipTailY = [shipHead[1] + length - 1];
+  }
+
+  const shipTail = [shipTailX, shipTailY];
+  const shipHeadDom = findDomCellAtCoordinates(...shipHead)
+
+  if (!board.checkBoatPlacementValidity(shipHead, shipTail)) {
+    shipHeadDom.classList.add('invalid-location');
+    clearDomCellInvalidity(shipHeadDom);
+  }
 }
 
 function switchSection(section) {

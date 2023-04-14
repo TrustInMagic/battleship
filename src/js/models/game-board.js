@@ -1,5 +1,5 @@
-import { Ship } from "./ship";
-import { Cell } from "./cell"
+import { Ship } from './ship';
+import { Cell } from './cell';
 
 export const GameBoard = () => {
   const board = [];
@@ -11,11 +11,11 @@ export const GameBoard = () => {
   generateBoard();
 
   function generateBoard() {
-    for (let i = 0; i < rows; i++) {
+    for (let i = rows; i > 0; i--) {
       const row = [];
       board.push(row);
-      for (let j = 0; j < cols; j++) {
-        const col = [Cell(i, j)];
+      for (let j = 1; j <= cols; j++) {
+        const col = [Cell(j, i)];
         row.push(col);
       }
     }
@@ -89,19 +89,19 @@ export const GameBoard = () => {
     }
 
     shipCells.forEach((cell) => (cell.heldShip = ship));
-    return ship;
+    return shipCells;
   };
 
   const checkBoatPlacementValidity = (head, tail) => {
     if (
-      head[0] < 0 ||
-      head[0] > 8 ||
-      head[1] < 0 ||
-      head[1] > 8 ||
-      tail[0] < 0 ||
-      tail[0] > 8 ||
-      tail[1] < 0 ||
-      tail[1] > 8
+      head[0] < 1 ||
+      head[0] > 10 ||
+      head[1] < 1 ||
+      head[1] > 10 ||
+      tail[0] < 1 ||
+      tail[0] > 10 ||
+      tail[1] < 1 ||
+      tail[1] > 10
     )
       return false;
     return true;
@@ -124,7 +124,7 @@ export const GameBoard = () => {
   };
 
   const checkAttackValidity = (x, y) => {
-    if (x < 0 || x > 8 || y < 0 || y > 8) return false;
+    if (x < 1 || x > 10 || y < 1 || y > 10) return false;
 
     const allAttacks = hits.concat(misses);
     for (let attack of allAttacks) {
@@ -144,7 +144,11 @@ export const GameBoard = () => {
     else console.log('Game Continues');
   };
 
-  return { placeShip, receiveAttack, returnBoard, findCellAtCoordinates };
+  return {
+    placeShip,
+    receiveAttack,
+    returnBoard,
+    findCellAtCoordinates,
+    checkBoatPlacementValidity,
+  };
 };
-
-
