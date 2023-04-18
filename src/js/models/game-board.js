@@ -61,58 +61,44 @@ export const GameBoard = () => {
       shipLength = Math.abs(head[0] - tail[0]) + 1;
       ship = Ship(shipLength);
       ships.push(ship);
-      const restOfCells = findMissingBoatCells(
-        head,
-        tail,
-        shipLength,
-        'horizontal'
-      );
+      const restOfCells = findMissingBoatCells(head, shipLength, 'horizontal');
       shipCells.push(...restOfCells);
     } else if (direction === 'vertical') {
       shipLength = Math.abs(head[1] - tail[1]) + 1;
       ship = Ship(shipLength);
       ships.push(ship);
-      const restOfCells = findMissingBoatCells(
-        head,
-        tail,
-        shipLength,
-        'vertical'
-      );
-      shipCells.push(...restOfCells)
+      const restOfCells = findMissingBoatCells(head, shipLength, 'vertical');
+      shipCells.push(...restOfCells);
     }
 
     shipCells.forEach((cell) => (cell.heldShip = ship));
     return shipCells;
   };
 
-  function findMissingBoatCells(head, tail, length, direction) {
+  function findMissingBoatCells(head, length, direction) {
     const cellNumberNotFound = length - 2;
     const restOfCells = [];
     if (direction === 'horizontal') {
       for (let i = 1; i <= cellNumberNotFound; i++) {
         const fixedCoord = head[1];
-        const variableCoord = head[0];
-        const cellInBetween = findCellAtCoordinates(
-          variableCoord + i,
-          fixedCoord,
-        );
+        const varCoord = head[0];
+        const cellInBetween = findCellAtCoordinates(varCoord + i, fixedCoord);
         restOfCells.push(cellInBetween);
       }
     } else if (direction === 'vertical') {
       for (let i = 1; i <= cellNumberNotFound; i++) {
         const fixedCoord = head[0];
-        const variableCoord = head[1];
-        const cellInBetween = findCellAtCoordinates(
-          fixedCoord,
-          variableCoord + i
-        );
+        const varCoord = head[1];
+        const cellInBetween = findCellAtCoordinates(fixedCoord, varCoord + i);
         restOfCells.push(cellInBetween);
       }
     }
     return restOfCells;
   }
 
-  const checkBoatPlacementValidity = (head, tail) => {
+  const checkBoatPlacementValidity = (head, tail, missingCells) => {
+    let valid = true;
+
     if (
       head[0] < 1 ||
       head[0] > 10 ||
@@ -122,9 +108,20 @@ export const GameBoard = () => {
       tail[0] > 10 ||
       tail[1] < 1 ||
       tail[1] > 10
-    )
+    ) {
       return false;
-    return true;
+    } else {
+      if (missingCells !== undefined) {
+        const headCell = findCellAtCoordinates(head[0], head[1]);
+        const tailCell = findCellAtCoordinates(tail[0], tail[1]);
+        const allBoatCells = [headCell, tailCell].concat(missingCells);
+
+        allBoatCells.forEach((cell) => {
+          if (cell.heldShip !== null) valid = false;
+        });
+      }
+    }
+    return valid;
   };
 
   const receiveAttack = (x, y) => {
@@ -170,6 +167,6 @@ export const GameBoard = () => {
     returnBoard,
     findCellAtCoordinates,
     checkBoatPlacementValidity,
-    findMissingBoatCells
+    findMissingBoatCells,
   };
 };

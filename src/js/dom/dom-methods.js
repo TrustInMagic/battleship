@@ -14,29 +14,6 @@ export function displayGameBoard(player) {
   }
 }
 
-function clearDomCellInvalidity(cell) {
-  cell.addEventListener('mouseleave', () => {
-    cell.classList.remove('invalid-location');
-  });
-}
-
-function clearDomCellsCustomColor(cells) {
-  cells.forEach((cell) => cell.classList.remove('attempt-place-ship'));
-}
-
-function findDomCellAtCoordinates(x, y) {
-  const cellsDom = document.querySelectorAll('.board-cell');
-  let searchedCell;
-
-  cellsDom.forEach((cell) => {
-    const cellX = cell.getAttribute('data-x');
-    const cellY = cell.getAttribute('data-y');
-    if (Number(cellX) === x && Number(cellY) === y) searchedCell = cell;
-  });
-
-  return searchedCell;
-}
-
 function getShipName(shipType) {
   const ships = {
     Galleon: 5,
@@ -98,19 +75,13 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
   const shipHeadDom = [findDomCellAtCoordinates(...shipHead)];
   const shipTailDom = [findDomCellAtCoordinates(...shipTail)];
   const restShipDom = [];
+  const missingCells = board.findMissingBoatCells(shipHead, length, direction);
+  restShipCells.push(...missingCells);
 
-  if (!board.checkBoatPlacementValidity(shipHead, shipTail)) {
+  if (!board.checkBoatPlacementValidity(shipHead, shipTail, restShipCells)) {
     shipHeadDom[0].classList.add('invalid-location');
     clearDomCellInvalidity(shipHeadDom[0]);
   } else {
-    const missingCells = board.findMissingBoatCells(
-      shipHead,
-      shipTail,
-      length,
-      direction
-    );
-    restShipCells.push(...missingCells);
-
     restShipCells.forEach((cell) => {
       if (cell === undefined) return;
       restShipDom.push(findDomCellAtCoordinates(cell.x, cell.y));
@@ -144,6 +115,28 @@ export function transitionBackground() {
 }
 
 export function placeShipDom(cells) {
-  cells.forEach((cell) => cell.classList.add('ship-placed'))
+  cells.forEach((cell) => cell.classList.add('ship-placed'));
 }
 
+function clearDomCellInvalidity(cell) {
+  cell.addEventListener('mouseleave', () => {
+    cell.classList.remove('invalid-location');
+  });
+}
+
+function clearDomCellsCustomColor(cells) {
+  cells.forEach((cell) => cell.classList.remove('attempt-place-ship'));
+}
+
+function findDomCellAtCoordinates(x, y) {
+  const cellsDom = document.querySelectorAll('.board-cell');
+  let searchedCell;
+
+  cellsDom.forEach((cell) => {
+    const cellX = cell.getAttribute('data-x');
+    const cellY = cell.getAttribute('data-y');
+    if (Number(cellX) === x && Number(cellY) === y) searchedCell = cell;
+  });
+
+  return searchedCell;
+}
