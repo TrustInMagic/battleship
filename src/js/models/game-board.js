@@ -71,8 +71,13 @@ export const GameBoard = () => {
       shipCells.push(...restOfCells);
     }
 
-    shipCells.forEach((cell) => (cell.heldShip = ship));
-    return shipCells;
+    const restBoatCells = findMissingBoatCells(head, shipLength, direction);
+    if (checkBoatPlacementValidity(head, tail, restBoatCells)) {
+      shipCells.forEach((cell) => (cell.heldShip = ship));
+      return true;
+    }
+
+    return false;
   };
 
   function findMissingBoatCells(head, length, direction) {

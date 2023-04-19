@@ -58,16 +58,13 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
   const shipHead = [cell.x, cell.y];
   let shipTailX;
   let shipTailY;
-  let direction;
 
   if (axis === 'horizontal') {
     shipTailX = shipHead[0] + length - 1;
     shipTailY = shipHead[1];
-    direction = 'horizontal';
   } else if (axis === 'vertical') {
     shipTailX = shipHead[0];
     shipTailY = shipHead[1] + length - 1;
-    direction = 'vertical';
   }
 
   const shipTail = [shipTailX, shipTailY];
@@ -75,12 +72,13 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
   const shipHeadDom = [findDomCellAtCoordinates(...shipHead)];
   const shipTailDom = [findDomCellAtCoordinates(...shipTail)];
   const restShipDom = [];
-  const missingCells = board.findMissingBoatCells(shipHead, length, direction);
+  const missingCells = board.findMissingBoatCells(shipHead, length, axis);
   restShipCells.push(...missingCells);
 
   if (!board.checkBoatPlacementValidity(shipHead, shipTail, restShipCells)) {
     shipHeadDom[0].classList.add('invalid-location');
     clearDomCellInvalidity(shipHeadDom[0]);
+    return false;
   } else {
     restShipCells.forEach((cell) => {
       if (cell === undefined) return;
