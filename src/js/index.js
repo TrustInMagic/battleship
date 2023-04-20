@@ -25,15 +25,17 @@ function runShipPlacementSection(callback) {
 
   const nameInput = document.querySelector('.game-start input');
   const nameSpan = document.querySelector('.ship-to-place .player-name');
+  const gameBoardDom = document.querySelector('.ship-placement .game-board');
 
   nameSpan.textContent = nameInput.value;
 
   const firstCaptain = Player(nameInput.value);
-  const board = firstCaptain.playerBoard;
+  const boardObj = firstCaptain.playerBoard;
+  const board = boardObj.returnBoard();
   const ships = ['Galleon', 'Frigate', 'Brigantine', 'Schooner', 'Sloop'];
 
-  displayGameBoard(firstCaptain);
-  handleCellEvents(board, ships, callback);
+  displayGameBoard(board, gameBoardDom);
+  handleCellEvents(boardObj, ships, callback);
 }
 
 function handleCellEvents(board, ships, callback) {
@@ -91,17 +93,18 @@ function handleAIShipPlacement() {
   const secondCaptain = Player('chat-GPT');
   const board = secondCaptain.playerBoard;
   const ships = ['Sloop', 'Schooner', 'Brigantine', 'Frigate', 'Galleon'];
-  
+
   let shipsPlaced = 0;
 
-  do {
-    const shipCoords = generateValidRandomShip(5, board)
+  while (shipsPlaced < 5) {
+    const shipCoords = generateValidRandomShipCoords(2, board);
+    console.log(shipCoords.shipHead, shipCoords.shipTail)
     if (board.placeShip(shipCoords.shipHead, shipCoords.shipTail)) {
-      shipsPlaced++
+      shipsPlaced++;
     }
-  } while (shipsPlaced < 6)
+  }
 
-  console.log(board.returnBoard());
+  return board;
 }
 
 function generateRandomShipCoords(length, board) {
@@ -120,25 +123,42 @@ function generateRandomShipCoords(length, board) {
   return { shipHead, shipTailObj };
 }
 
-function generateValidRandomShip(length, board) {
+function generateValidRandomShipCoords(length, board) {
   let validShipCoordFound = false;
+  let shipHead;
+  let shipTail;
 
-  do {
+  while (!validShipCoordFound) {
     const coordObj = generateRandomShipCoords(length, board);
     const tailObj = coordObj.shipTailObj;
-    const shipHead = coordObj.shipHead;
-    let shipTail = [tailObj?.x, tailObj?.y];
-    if (shipTail[0] !== undefined) validShipCoordFound = true;
+    let shipHeadAttempt = coordObj.shipHead;
+    let shipTailAttempt = [tailObj?.x, tailObj?.y];
     // if length is 1, we don't need to find tail coords
     if (length === 1) {
       validShipCoordFound = true;
-      shipTail = shipHead;
+      shipTail = shipHeadAttempt;
     }
+    if (shipTailAttempt[0] !== undefined) {
+      validShipCoordFound = true;
+      shipHead = shipHeadAttempt;
+      shipTail = shipTailAttempt;
+    }
+  }
 
-    return { shipHead, shipTail };
-  } while (!validShipCoordFound);
+  return { shipHead, shipTail };
 }
 
-function runBattleSection(playerBoard, opponentBoard) {
-  
+function runBattleSection(playerBoardObj, opponentBoardObj) {
+  switchSection('battle-section');
+  transitionBackground();
+
+  const playerBoard = playerBoardObj.returnBoard();
+  const opponentBoard = opponentBoardObj.returnBoard();
+  const playerBoardDom = document.querySelector('.player-board');
+  const opponentBoardDom = document.querySelector('.ai-board');
+
+  displayGameBoard(playerBoard, playerBoardDom);
+  displayGameBoard(opponentBoard, opponentBoardDom);
+
+  console.log(playerBoard);
 }

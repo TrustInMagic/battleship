@@ -1,7 +1,4 @@
-export function displayGameBoard(player) {
-  const board = player.playerBoard.returnBoard();
-  const gameBoardDom = document.querySelector('.ship-placement .game-board');
-
+export function displayGameBoard(board, domElement) {
   for (let row of board) {
     for (let cellArr of row) {
       const cell = cellArr[0];
@@ -9,7 +6,11 @@ export function displayGameBoard(player) {
       cellDom.classList.add('board-cell');
       cellDom.setAttribute('data-x', cell.x);
       cellDom.setAttribute('data-y', cell.y);
-      gameBoardDom.appendChild(cellDom);
+      if (cell.heldShip !== null) {
+        const shipLength = cell.heldShip.length
+        cellDom.setAttribute('data-ship', shipLength)
+      }
+      domElement.appendChild(cellDom);
     }
   }
 }
@@ -107,16 +108,25 @@ function markAttemptToPlaceShip(cells) {
 export function switchSection(section) {
   const landingSection = document.querySelector('.landing');
   const shipPlacement = document.querySelector('.ship-placement');
+  const battleSection = document.querySelector('.battle-section')
 
   if (section === 'ship-placement') {
     landingSection.style.cssText = 'display: none';
     shipPlacement.style.cssText = 'display: flex';
   }
+
+  if (section === 'battle-section') {
+    landingSection.style.cssText = 'display: none';
+    shipPlacement.style.cssText = 'display: none';
+    battleSection.style.cssText = 'display: flex'
+  }
 }
 
 export function transitionBackground() {
   const shipPlacement = document.querySelector('.ship-placement');
+  const battleSection = document.querySelector('.battle-section');
   shipPlacement.classList.add('background-swap');
+  battleSection.classList.add('background-swap');
 }
 
 export function placeShipDom(cells) {
@@ -145,3 +155,5 @@ function findDomCellAtCoordinates(x, y) {
 
   return searchedCell;
 }
+
+
