@@ -72,12 +72,12 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
   const shipHeadDom = [findDomCellAtCoordinates(...shipHead)];
   const shipTailDom = [findDomCellAtCoordinates(...shipTail)];
   const restShipDom = [];
-  const missingCells = board.findMissingBoatCells(shipHead, length, axis);
+  const cellsObj = board.findMissingBoatCells(shipHead, length, axis);
+  const missingCells = cellsObj.middleCells;
   restShipCells.push(...missingCells);
 
   if (!board.checkBoatPlacementValidity(shipHead, shipTail, restShipCells)) {
-    shipHeadDom[0].classList.add('invalid-location');
-    clearDomCellInvalidity(shipHeadDom[0]);
+    markInvalidShipLocation(shipHeadDom[0]);
     return false;
   } else {
     restShipCells.forEach((cell) => {
@@ -86,15 +86,22 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
     });
 
     const allDomShipCells = shipHeadDom.concat(shipTailDom).concat(restShipDom);
-    allDomShipCells.forEach((cell) => {
-      cell.classList.add('attempt-place-ship');
-      cell.addEventListener('mouseleave', () =>
-        clearDomCellsCustomColor(allDomShipCells)
-      );
-    });
+    markAttemptToPlaceShip(allDomShipCells)
 
     return { shipHead, shipTail, allDomShipCells };
   }
+}
+
+function markInvalidShipLocation(cell) {
+  cell.classList.add('invalid-location');
+  clearDomCellInvalidity(cell);
+}
+
+function markAttemptToPlaceShip(cells) {
+  cells.forEach((cell) => {
+    cell.classList.add('attempt-place-ship');
+    cell.addEventListener('mouseleave', () => clearDomCellsCustomColor(cells));
+  });
 }
 
 export function switchSection(section) {

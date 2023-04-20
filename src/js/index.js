@@ -25,8 +25,6 @@ function runShipPlacementSection(callback) {
 
   const nameInput = document.querySelector('.game-start input');
   const nameSpan = document.querySelector('.ship-to-place .player-name');
-  const axisButton = document.querySelector('.ship-placement button');
-  const axisDom = document.querySelector('.ship-placement .axis');
 
   nameSpan.textContent = nameInput.value;
 
@@ -35,6 +33,12 @@ function runShipPlacementSection(callback) {
   const ships = ['Galleon', 'Frigate', 'Brigantine', 'Schooner', 'Sloop'];
 
   displayGameBoard(firstCaptain);
+  handleCellEvents(board, ships, callback);
+}
+
+function handleCellEvents(board, ships, callback) {
+  const axisButton = document.querySelector('.ship-placement button');
+  const axisDom = document.querySelector('.ship-placement .axis');
   let axis = 'horizontal';
 
   axisButton.addEventListener('click', () => {
@@ -48,7 +52,7 @@ function runShipPlacementSection(callback) {
   });
 
   const cellsDom = document.querySelectorAll('.board-cell');
-  let shipIndex = 0;
+  let shipsPlacedIdx = 0;
 
   cellsDom.forEach((domCell) => {
     let cellX;
@@ -58,22 +62,16 @@ function runShipPlacementSection(callback) {
     const boardCell = board.findCellAtCoordinates(Number(cellX), Number(cellY));
 
     domCell.addEventListener('mouseenter', () => {
-      if (shipIndex > 4) return;
-      const shipToPlace = ships[shipIndex];
+      if (shipsPlacedIdx > 4) return;
+      const shipToPlace = ships[shipsPlacedIdx];
       attemptShipPlacementDom(shipToPlace, axis, boardCell, board);
     });
 
     domCell.addEventListener('click', () => {
-      if (shipIndex > 4) return;
-      const shipToPlace = ships[shipIndex];
+      const shipToPlace = ships[shipsPlacedIdx];
       if (handleShipPlacement(shipToPlace, boardCell, board, axis)) {
-        shipIndex++;
-      }
-    });
-
-    domCell.addEventListener('mouseup', () => {
-      if (shipIndex > 3) {
-        callback(board);
+        shipsPlacedIdx++;
+        if (shipsPlacedIdx === 5) return callback(board);
       }
     });
   });
@@ -93,30 +91,54 @@ function handleAIShipPlacement() {
   const secondCaptain = Player('chat-GPT');
   const board = secondCaptain.playerBoard;
   const ships = ['Sloop', 'Schooner', 'Brigantine', 'Frigate', 'Galleon'];
+  
+  let shipsPlaced = 0;
+
+  do {
+    const shipCoords = generateValidRandomShip(5, board)
+    if (board.placeShip(shipCoords.shipHead, shipCoords.shipTail)) {
+      shipsPlaced++
+    }
+  } while (shipsPlaced < 6)
+
+  console.log(board.returnBoard());
+}
+
+function generateRandomShipCoords(length, board) {
   const shipHead = [
     Math.floor(Math.random() * 10) + 1,
     Math.floor(Math.random() * 10) + 1,
   ];
   let direction;
-  let shipsPlaced = 0;
-  let shipsIndex = 0;
 
   if (Math.random() < 0.5) direction = 'horizontal';
   else direction = 'vertical';
 
-  
+  const cellsObj = board.findMissingBoatCells(shipHead, length, direction);
+  const shipTailObj = cellsObj.tailCell;
 
-  const shipCells = board.findMissingBoatCells(
-    shipHead,
-    ships[shipsIndex] + 1,
-    direction
-  );
+  return { shipHead, shipTailObj };
+}
 
-  console.log(shipCells)
+function generateValidRandomShip(length, board) {
+  let validShipCoordFound = false;
 
-  return board;
+  do {
+    const coordObj = generateRandomShipCoords(length, board);
+    const tailObj = coordObj.shipTailObj;
+    const shipHead = coordObj.shipHead;
+    let shipTail = [tailObj?.x, tailObj?.y];
+    if (shipTail[0] !== undefined) validShipCoordFound = true;
+    // if length is 1, we don't need to find tail coords
+    if (length === 1) {
+      validShipCoordFound = true;
+      shipTail = shipHead;
+    }
+
+    return { shipHead, shipTail };
+  } while (!validShipCoordFound);
 }
 
 function runBattleSection(playerBoard, opponentBoard) {
-  // console.log(opponentBoard);
+  
 }

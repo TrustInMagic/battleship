@@ -190,3 +190,7 @@ body {
 .ship-placed {
   background-color: var(--ship-placed);
 }
+
+.invalid-board {
+  cursor: not-allowed
+}
