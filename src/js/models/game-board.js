@@ -74,7 +74,8 @@ export const GameBoard = () => {
     }
 
     const cellsObj = findMissingBoatCells(head, shipLength, direction);
-    const middleCells = cellsObj.middle
+    const middleCells = cellsObj.middleCells
+
     if (checkBoatPlacementValidity(head, tail, middleCells)) {
       shipCells.forEach((cell) => (cell.heldShip = ship));
       return true;

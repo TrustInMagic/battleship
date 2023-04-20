@@ -9,7 +9,7 @@ import {
 
 const playGame = (() => {
   const startForm = document.querySelector('.game-start');
-
+ 
   startForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const opponentBoard = handleAIShipPlacement();
@@ -97,8 +97,7 @@ function handleAIShipPlacement() {
   let shipsPlaced = 0;
 
   while (shipsPlaced < 5) {
-    const shipCoords = generateValidRandomShipCoords(2, board);
-    console.log(shipCoords.shipHead, shipCoords.shipTail)
+    const shipCoords = generateValidRandomShipCoords(5, board);
     if (board.placeShip(shipCoords.shipHead, shipCoords.shipTail)) {
       shipsPlaced++;
     }
