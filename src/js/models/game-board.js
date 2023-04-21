@@ -146,9 +146,9 @@ export const GameBoard = () => {
     if (attackedCell.heldShip !== null) {
       hits.push({ x, y });
       attackedCell.heldShip.getHit();
+      if (checkGameOver()) return 'game-over';
       // if the ship has been sunk, return the ship
       if (attackedCell.heldShip.checkIfSunk()) return attackedCell.heldShip;
-      if (checkGameOver()) return 'game-over';
       return 'hit';
     } else {
       misses.push({ x, y });
@@ -172,6 +172,8 @@ export const GameBoard = () => {
       (total, ship) => (total += ship.length),
       0
     );
+
+    console.log(hits.length, cellNumberHoldingBoats)
 
     if (hits.length === cellNumberHoldingBoats) return true;
   };

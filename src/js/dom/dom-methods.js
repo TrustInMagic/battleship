@@ -15,7 +15,7 @@ export function displayGameBoard(board, domElement) {
   }
 }
 
-function getShipName(shipType) {
+function getShipDetails(shipType) {
   const ships = {
     Galleon: 5,
     Frigate: 4,
@@ -51,7 +51,7 @@ function getShipName(shipType) {
   return { ship, length };
 }
 export function attemptShipPlacementDom(shipType, axis, cell, board) {
-  const shipData = getShipName(shipType);
+  const shipData = getShipDetails(shipType);
   const shipSpan = document.querySelector('.ship-to-place .ship');
   shipSpan.textContent = shipData.ship;
   const length = shipData.length;
@@ -109,6 +109,15 @@ export function switchSection(section) {
   const landingSection = document.querySelector('.landing');
   const shipPlacement = document.querySelector('.ship-placement');
   const battleSection = document.querySelector('.battle-section');
+  const gameOver = document.querySelector('.game-over');
+
+  if (section === 'landing') {
+    landingSection.style.cssText = 'display: none';
+    shipPlacement.style.cssText = 'display: none';
+    battleSection.style.cssText = 'display: none';
+    gameOver.style.cssText = 'display: none';
+    landingSection.style.cssText = 'display: flex';
+  }
 
   if (section === 'ship-placement') {
     landingSection.style.cssText = 'display: none';
@@ -119,6 +128,13 @@ export function switchSection(section) {
     landingSection.style.cssText = 'display: none';
     shipPlacement.style.cssText = 'display: none';
     battleSection.style.cssText = 'display: flex';
+  }
+
+  if (section === 'game-over') {
+    landingSection.style.cssText = 'display: none';
+    shipPlacement.style.cssText = 'display: none';
+    battleSection.style.cssText = 'display: none';
+    gameOver.style.cssText = 'display: flex';
   }
 }
 
@@ -159,4 +175,17 @@ export function findDomCellAtCoordinates(x, y, player) {
   });
 
   return searchedCell;
+}
+
+export function markSunkShip(shipLength, player) {
+  let cellsDom;
+
+  if (player === 'player') {
+    cellsDom = document.querySelectorAll('.player-board .board-cell');
+  } else cellsDom = document.querySelectorAll('.ai-board .board-cell');
+
+  cellsDom.forEach((cell) => {
+    const shipDom = Number(cell.getAttribute('data-ship'));
+    if (shipDom === shipLength) cell.classList.add('sunk');
+  });
 }

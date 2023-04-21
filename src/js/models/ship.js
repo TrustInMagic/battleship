@@ -1,15 +1,14 @@
 export const Ship = (length) => {
   let hits = 0;
 
-  function getHit() {
-    this.hits++;
+  const getHit = () => {
+    hits++;
   }
 
-  function checkIfSunk() {
-    console.log(this.length, this.hits)
-    if (this.hits === this.length) return true;
+  const checkIfSunk = () => {
+    if (hits === length) return true;
     else return false;
   }
 
-  return { length, getHit, checkIfSunk, hits};
+  return { length, getHit, checkIfSunk};
 };

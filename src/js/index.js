@@ -6,10 +6,12 @@ import {
   attemptShipPlacementDom,
   placeShipDom,
   findDomCellAtCoordinates,
+  markSunkShip
 } from './dom/dom-methods';
 
-const startGame = (() => {
+const startGame = () => {
   const startForm = document.querySelector('.game-start');
+  transitionBackground('landing')
 
   startForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -18,7 +20,7 @@ const startGame = (() => {
       runBattleSection(firstCaptain, secondCaptain);
     });
   });
-})();
+};
 
 function runShipPlacementSection(callback) {
   switchSection('ship-placement');
@@ -190,21 +192,23 @@ function playGame(firstCaptain, secondCaptain) {
         if (!opponentAttack(secondCaptain, firstCaptain))
           opponentAttack(secondCaptain, firstCaptain);
         awaitedTurn = true;
-      }, 2000);
+      }, 500);
     });
   });
 }
 
-function playerAttack(attacker, opponent, cell) {
+function playerAttack(firstCaptain, opponent, cell) {
   const prompt = document.querySelector('.prompt');
   const opponentBoardObj = opponent.playerBoard;
+  const opponentName = opponent.name
+  const name = firstCaptain.name
 
   const attack = opponentBoardObj.receiveAttack(cell.cellX, cell.cellY);
   const domCell = findDomCellAtCoordinates(cell.cellX, cell.cellY, 'enemy');
 
   if (attack === 'game-over') {
     domCell.classList.add('hit');
-    gameOver();
+    gameOver(name);
   } else if (attack === 'invalid') {
     return false;
   } else {
@@ -214,7 +218,10 @@ function playerAttack(attacker, opponent, cell) {
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
-      // WRITE HERE
+      const shipLength = attack.length;
+      const shipName = getShipName(shipLength);
+      prompt.textContent = `You managed to sink ${opponentName}'s ${shipName} fleet. Good job!`;
+      markSunkShip(shipLength, 'opponent')
     }
     if (attack === 'miss') {
       prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
@@ -229,6 +236,7 @@ function opponentAttack(attacker, opponent) {
   const prompt = document.querySelector('.prompt');
   const opponentBoardObj = opponent.playerBoard;
   const name = attacker.name;
+  const opponentName = opponent.name
 
   const randCell = generateRandomAttack();
   const attack = opponentBoardObj.receiveAttack(randCell.x, randCell.y);
@@ -236,7 +244,7 @@ function opponentAttack(attacker, opponent) {
 
   if (attack === 'game-over') {
     domCell.classList.add('hit');
-    gameOver();
+    gameOver(opponentName);
   } else if (attack === 'invalid') {
     return false;
   } else {
@@ -246,7 +254,10 @@ function opponentAttack(attacker, opponent) {
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
-      // WRITE HERE
+      const shipLength = attack.length;
+      const shipName = getShipName(shipLength);
+      prompt.textContent = `Oh no, your ${shipName} fleet has been sunk!`;
+      markSunkShip(shipLength, 'player');
     }
     if (attack === 'miss') {
       prompt.textContent = `${name} shoots a fire in your waters ... and misses!`;
@@ -256,6 +267,21 @@ function opponentAttack(attacker, opponent) {
   return { attack, randCell };
 }
 
+function getShipName(length) {
+  switch (length) {
+    case 1:
+      return 'Sloop';
+    case 2:
+      return 'Schooner';
+    case 3:
+      return 'Brigantine';
+    case 4:
+      return 'Frigate';
+    case 5:
+      return 'Galleon';
+  }
+}
+
 function generateRandomAttack() {
   const x = Math.floor(Math.random() * 10) + 1;
   const y = Math.floor(Math.random() * 10) + 1;
@@ -263,6 +289,15 @@ function generateRandomAttack() {
   return { x, y };
 }
 
-function gameOver() {
-  console.log('Game Over');
+function gameOver(winner) {
+  switchSection('game-over');
+  transitionBackground();
+
+  const winnerDom = document.querySelector('.game-over .winner');
+  const playAgainButton = document.querySelector('.game-over button')
+  winnerDom.textContent = winner;
+
+  playAgainButton.addEventListener('click', startGame)
 }
+
+startGame();
