@@ -212,13 +212,17 @@ function playerAttack(attacker, opponent, cell) {
       prompt.textContent = `You fire a shot in enemy waters ... and hit!`;
       domCell.classList.add('hit');
     }
+    // attack returns the boat object in case of sunk
+    if (typeof attack === 'object') {
+      // WRITE HERE
+    }
     if (attack === 'miss') {
       prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
       domCell.classList.add('miss');
     }
   }
 
-  return true;
+  return { attack, cell };
 }
 
 function opponentAttack(attacker, opponent) {
@@ -226,33 +230,30 @@ function opponentAttack(attacker, opponent) {
   const opponentBoardObj = opponent.playerBoard;
   const name = attacker.name;
 
-  const randomAttack = generateRandomAttack();
-  const enemyAttack = opponentBoardObj.receiveAttack(
-    randomAttack.x,
-    randomAttack.y
-  );
-  const domCell = findDomCellAtCoordinates(
-    randomAttack.x,
-    randomAttack.y,
-    'player'
-  );
+  const randCell = generateRandomAttack();
+  const attack = opponentBoardObj.receiveAttack(randCell.x, randCell.y);
+  const domCell = findDomCellAtCoordinates(randCell.x, randCell.y, 'player');
 
-  if (enemyAttack === 'game-over') {
+  if (attack === 'game-over') {
     domCell.classList.add('hit');
     gameOver();
-  } else if (enemyAttack === 'invalid') {
+  } else if (attack === 'invalid') {
     return false;
   } else {
-    if (enemyAttack === 'hit') {
+    if (attack === 'hit') {
       prompt.textContent = `${name} shoots a fire in your waters ... and hits!`;
       domCell.classList.add('hit');
     }
-    if (enemyAttack === 'miss') {
+    // attack returns the boat object in case of sunk
+    if (typeof attack === 'object') {
+      // WRITE HERE
+    }
+    if (attack === 'miss') {
       prompt.textContent = `${name} shoots a fire in your waters ... and misses!`;
       domCell.classList.add('miss');
     }
   }
-  return true;
+  return { attack, randCell };
 }
 
 function generateRandomAttack() {
