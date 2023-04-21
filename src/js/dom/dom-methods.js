@@ -7,8 +7,8 @@ export function displayGameBoard(board, domElement) {
       cellDom.setAttribute('data-x', cell.x);
       cellDom.setAttribute('data-y', cell.y);
       if (cell.heldShip !== null) {
-        const shipLength = cell.heldShip.length
-        cellDom.setAttribute('data-ship', shipLength)
+        const shipLength = cell.heldShip.length;
+        cellDom.setAttribute('data-ship', shipLength);
       }
       domElement.appendChild(cellDom);
     }
@@ -87,7 +87,7 @@ export function attemptShipPlacementDom(shipType, axis, cell, board) {
     });
 
     const allDomShipCells = shipHeadDom.concat(shipTailDom).concat(restShipDom);
-    markAttemptToPlaceShip(allDomShipCells)
+    markAttemptToPlaceShip(allDomShipCells);
 
     return { shipHead, shipTail, allDomShipCells };
   }
@@ -108,7 +108,7 @@ function markAttemptToPlaceShip(cells) {
 export function switchSection(section) {
   const landingSection = document.querySelector('.landing');
   const shipPlacement = document.querySelector('.ship-placement');
-  const battleSection = document.querySelector('.battle-section')
+  const battleSection = document.querySelector('.battle-section');
 
   if (section === 'ship-placement') {
     landingSection.style.cssText = 'display: none';
@@ -118,7 +118,7 @@ export function switchSection(section) {
   if (section === 'battle-section') {
     landingSection.style.cssText = 'display: none';
     shipPlacement.style.cssText = 'display: none';
-    battleSection.style.cssText = 'display: flex'
+    battleSection.style.cssText = 'display: flex';
   }
 }
 
@@ -143,9 +143,14 @@ function clearDomCellsCustomColor(cells) {
   cells.forEach((cell) => cell.classList.remove('attempt-place-ship'));
 }
 
-function findDomCellAtCoordinates(x, y) {
-  const cellsDom = document.querySelectorAll('.board-cell');
+export function findDomCellAtCoordinates(x, y, player) {
+  let cellsDom = document.querySelectorAll('.board-cell');
   let searchedCell;
+  if (player !== undefined) {
+    if (player === 'player') {
+      cellsDom = document.querySelectorAll('.player-board .board-cell');
+    } else cellsDom = document.querySelectorAll('.ai-board .board-cell');
+  }
 
   cellsDom.forEach((cell) => {
     const cellX = cell.getAttribute('data-x');
@@ -155,5 +160,3 @@ function findDomCellAtCoordinates(x, y) {
 
   return searchedCell;
 }
-
-

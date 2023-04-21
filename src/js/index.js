@@ -5,16 +5,17 @@ import {
   transitionBackground,
   attemptShipPlacementDom,
   placeShipDom,
+  findDomCellAtCoordinates,
 } from './dom/dom-methods';
 
-const playGame = (() => {
+const startGame = (() => {
   const startForm = document.querySelector('.game-start');
- 
+
   startForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const opponentBoard = handleAIShipPlacement();
-    runShipPlacementSection((playerBoard) => {
-      runBattleSection(playerBoard, opponentBoard);
+    const secondCaptain = handleAIShipPlacement();
+    runShipPlacementSection((firstCaptain) => {
+      runBattleSection(firstCaptain, secondCaptain);
     });
   });
 })();
@@ -26,21 +27,21 @@ function runShipPlacementSection(callback) {
   const nameInput = document.querySelector('.game-start input');
   const nameSpan = document.querySelector('.ship-to-place .player-name');
   const gameBoardDom = document.querySelector('.ship-placement .game-board');
+  const ships = ['Galleon', 'Frigate', 'Brigantine', 'Schooner', 'Sloop'];
 
   nameSpan.textContent = nameInput.value;
-
   const firstCaptain = Player(nameInput.value);
   const boardObj = firstCaptain.playerBoard;
   const board = boardObj.returnBoard();
-  const ships = ['Galleon', 'Frigate', 'Brigantine', 'Schooner', 'Sloop'];
 
   displayGameBoard(board, gameBoardDom);
-  handleCellEvents(boardObj, ships, callback);
+  handleCellEvents(firstCaptain, ships, callback);
 }
 
-function handleCellEvents(board, ships, callback) {
+function handleCellEvents(firstCaptain, ships, callback) {
   const axisButton = document.querySelector('.ship-placement button');
   const axisDom = document.querySelector('.ship-placement .axis');
+  const boardObj = firstCaptain.playerBoard;
   let axis = 'horizontal';
 
   axisButton.addEventListener('click', () => {
@@ -61,19 +62,22 @@ function handleCellEvents(board, ships, callback) {
     let cellY;
     cellX = domCell.getAttribute('data-x');
     cellY = domCell.getAttribute('data-y');
-    const boardCell = board.findCellAtCoordinates(Number(cellX), Number(cellY));
+    const boardCell = boardObj.findCellAtCoordinates(
+      Number(cellX),
+      Number(cellY)
+    );
 
     domCell.addEventListener('mouseenter', () => {
       if (shipsPlacedIdx > 4) return;
       const shipToPlace = ships[shipsPlacedIdx];
-      attemptShipPlacementDom(shipToPlace, axis, boardCell, board);
+      attemptShipPlacementDom(shipToPlace, axis, boardCell, boardObj);
     });
 
     domCell.addEventListener('click', () => {
       const shipToPlace = ships[shipsPlacedIdx];
-      if (handleShipPlacement(shipToPlace, boardCell, board, axis)) {
+      if (handleShipPlacement(shipToPlace, boardCell, boardObj, axis)) {
         shipsPlacedIdx++;
-        if (shipsPlacedIdx === 5) return callback(board);
+        if (shipsPlacedIdx === 5) return callback(firstCaptain);
       }
     });
   });
@@ -92,18 +96,16 @@ function handleShipPlacement(shipToPlace, boardCell, board, axis) {
 function handleAIShipPlacement() {
   const secondCaptain = Player('chat-GPT');
   const board = secondCaptain.playerBoard;
-  const ships = ['Sloop', 'Schooner', 'Brigantine', 'Frigate', 'Galleon'];
+  let shipsPlaced = 1;
 
-  let shipsPlaced = 0;
-
-  while (shipsPlaced < 5) {
-    const shipCoords = generateValidRandomShipCoords(5, board);
+  while (shipsPlaced < 6) {
+    const shipCoords = generateValidRandomShipCoords(shipsPlaced, board);
     if (board.placeShip(shipCoords.shipHead, shipCoords.shipTail)) {
       shipsPlaced++;
     }
   }
 
-  return board;
+  return secondCaptain;
 }
 
 function generateRandomShipCoords(length, board) {
@@ -136,6 +138,7 @@ function generateValidRandomShipCoords(length, board) {
     if (length === 1) {
       validShipCoordFound = true;
       shipTail = shipHeadAttempt;
+      shipHead = shipHeadAttempt;
     }
     if (shipTailAttempt[0] !== undefined) {
       validShipCoordFound = true;
@@ -147,9 +150,11 @@ function generateValidRandomShipCoords(length, board) {
   return { shipHead, shipTail };
 }
 
-function runBattleSection(playerBoardObj, opponentBoardObj) {
+function runBattleSection(firstCaptain, secondCaptain) {
   switchSection('battle-section');
   transitionBackground();
+  const playerBoardObj = firstCaptain.playerBoard;
+  const opponentBoardObj = secondCaptain.playerBoard;
 
   const playerBoard = playerBoardObj.returnBoard();
   const opponentBoard = opponentBoardObj.returnBoard();
@@ -159,5 +164,104 @@ function runBattleSection(playerBoardObj, opponentBoardObj) {
   displayGameBoard(playerBoard, playerBoardDom);
   displayGameBoard(opponentBoard, opponentBoardDom);
 
-  console.log(playerBoard);
+  playGame(firstCaptain, secondCaptain);
+}
+
+function playGame(firstCaptain, secondCaptain) {
+  const opponentCells = document.querySelectorAll('.enemy-waters .board-cell');
+  const prompt = document.querySelector('.prompt');
+  const playerName = firstCaptain.name;
+  let awaitedTurn = true;
+
+  prompt.textContent = `Awaiting yer orders, Admiral ${playerName}!`;
+  opponentCells.forEach((cell) => {
+    cell.addEventListener('click', () => {
+      if (awaitedTurn === false) return;
+      const cellX = Number(cell.getAttribute('data-x'));
+      const cellY = Number(cell.getAttribute('data-y'));
+      const boardCell = { cellX, cellY };
+
+      if (!playerAttack(firstCaptain, secondCaptain, boardCell)) {
+        return;
+      }
+      awaitedTurn = false;
+
+      setTimeout(() => {
+        if (!opponentAttack(secondCaptain, firstCaptain))
+          opponentAttack(secondCaptain, firstCaptain);
+        awaitedTurn = true;
+      }, 2000);
+    });
+  });
+}
+
+function playerAttack(attacker, opponent, cell) {
+  const prompt = document.querySelector('.prompt');
+  const opponentBoardObj = opponent.playerBoard;
+
+  const attack = opponentBoardObj.receiveAttack(cell.cellX, cell.cellY);
+  const domCell = findDomCellAtCoordinates(cell.cellX, cell.cellY, 'enemy');
+
+  if (attack === 'game-over') {
+    domCell.classList.add('hit');
+    gameOver();
+  } else if (attack === 'invalid') {
+    return false;
+  } else {
+    if (attack === 'hit') {
+      prompt.textContent = `You fire a shot in enemy waters ... and hit!`;
+      domCell.classList.add('hit');
+    }
+    if (attack === 'miss') {
+      prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
+      domCell.classList.add('miss');
+    }
+  }
+
+  return true;
+}
+
+function opponentAttack(attacker, opponent) {
+  const prompt = document.querySelector('.prompt');
+  const opponentBoardObj = opponent.playerBoard;
+  const name = attacker.name;
+
+  const randomAttack = generateRandomAttack();
+  const enemyAttack = opponentBoardObj.receiveAttack(
+    randomAttack.x,
+    randomAttack.y
+  );
+  const domCell = findDomCellAtCoordinates(
+    randomAttack.x,
+    randomAttack.y,
+    'player'
+  );
+
+  if (enemyAttack === 'game-over') {
+    domCell.classList.add('hit');
+    gameOver();
+  } else if (enemyAttack === 'invalid') {
+    return false;
+  } else {
+    if (enemyAttack === 'hit') {
+      prompt.textContent = `${name} shoots a fire in your waters ... and hits!`;
+      domCell.classList.add('hit');
+    }
+    if (enemyAttack === 'miss') {
+      prompt.textContent = `${name} shoots a fire in your waters ... and misses!`;
+      domCell.classList.add('miss');
+    }
+  }
+  return true;
+}
+
+function generateRandomAttack() {
+  const x = Math.floor(Math.random() * 10) + 1;
+  const y = Math.floor(Math.random() * 10) + 1;
+
+  return { x, y };
+}
+
+function gameOver() {
+  console.log('Game Over');
 }

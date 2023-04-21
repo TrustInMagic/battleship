@@ -54,30 +54,28 @@ export const GameBoard = () => {
       return false;
     } else if (direction === 'single-cell') {
       ship = Ship(1);
-      ships.push(ship);
       // case of single-cell boat, remove the double coordinate from arr
       shipCells.shift();
     } else if (direction === 'horizontal') {
       shipLength = Math.abs(head[0] - tail[0]) + 1;
       ship = Ship(shipLength);
-      ships.push(ship);
       const cellsObj = findMissingBoatCells(head, shipLength, 'horizontal');
-      const middleCells = cellsObj.middleCells
+      const middleCells = cellsObj.middleCells;
       shipCells.push(...middleCells);
     } else if (direction === 'vertical') {
       shipLength = Math.abs(head[1] - tail[1]) + 1;
       ship = Ship(shipLength);
-      ships.push(ship);
       const cellsObj = findMissingBoatCells(head, shipLength, 'vertical');
       const middleCells = cellsObj.middleCells;
       shipCells.push(...middleCells);
     }
 
     const cellsObj = findMissingBoatCells(head, shipLength, direction);
-    const middleCells = cellsObj.middleCells
-
+    const middleCells = cellsObj.middleCells;
+    // if valid coords, add the ship both to the board and the ship array
     if (checkBoatPlacementValidity(head, tail, middleCells)) {
       shipCells.forEach((cell) => (cell.heldShip = ship));
+      ships.push(ship);
       return true;
     }
 
@@ -103,8 +101,8 @@ export const GameBoard = () => {
       }
     }
 
-    const middleCells = restOfCells.slice(0, restOfCells.length - 1)
-    const tailCell = restOfCells[restOfCells.length - 1]
+    const middleCells = restOfCells.slice(0, restOfCells.length - 1);
+    const tailCell = restOfCells[restOfCells.length - 1];
 
     return { middleCells, tailCell };
   }
@@ -139,18 +137,22 @@ export const GameBoard = () => {
 
   const receiveAttack = (x, y) => {
     if (checkAttackValidity(x, y) === false) {
-      console.log('invalid attack');
-      return;
+      return 'invalid';
     }
 
     const attackedCell = findCellAtCoordinates(x, y);
     attackedCell.isHit = true;
 
+    
     if (attackedCell.heldShip !== null) {
       hits.push({ x, y });
       attackedCell.heldShip.getHit();
-      checkGameOver();
-    } else misses.push({ x, y });
+      if (checkGameOver()) return 'game-over';
+      return 'hit';
+    } else {
+      misses.push({ x, y });
+      return 'miss'
+    }
   };
 
   const checkAttackValidity = (x, y) => {
@@ -170,8 +172,9 @@ export const GameBoard = () => {
       0
     );
 
-    if (hits.length >= cellNumberHoldingBoats) console.log('Game Over');
-    else console.log('Game Continues');
+    console.log(hits.length, cellNumberHoldingBoats)
+
+    if (hits.length === cellNumberHoldingBoats) return true;
   };
 
   return {
