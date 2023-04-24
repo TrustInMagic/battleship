@@ -1,0 +1,407 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  font-family: pirateship;
+  overflow: hidden;
+}
+
+:root {
+  --font-red: #f12711;
+  --stone-white: #f5f5f4;
+  --invalid-location: #ef4444;
+  --place-ship: #22c55e;
+  --ship-placed: #166534;
+  --ship-sunk: #3b82f6;
+  --aim: #bbf7d0;
+}
+
+@font-face {
+  font-family: treasure-font;
+  src: url(./assets/fonts/treasurehunt-font/TreasurehuntPersonalUseRegular-3zKgp.otf);
+}
+
+@font-face {
+  font-family: pirateship;
+  src: url(./assets/fonts/pirateship-font/Pirateship-MV8le.ttf);
+}
+
+/* landing-section */
+
+.landing {
+  background: url(./assets/landing-page-background.jpg) no-repeat center center
+    fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.landing h1 {
+  margin-top: 10px;
+  font-size: 5rem;
+  font-family: treasure-font;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.game-start {
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  height: 150px;
+  width: 200px;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.game-start input {
+  font-family: inherit;
+  font-size: 100%;
+  height: 50px;
+  width: 250px;
+  background: transparent;
+  border: none;
+  border-bottom: var(--font-red) solid 1px;
+  color: var(--font-red);
+  font-weight: 600;
+  font-size: 1.3rem;
+  padding: 0px 5px;
+  outline: none;
+}
+
+.game-start input::placeholder {
+  color: var(--font-red);
+  font-weight: 600;
+  font-size: 1.3rem;
+}
+
+.game-start button {
+  height: 40px;
+  width: 250px;
+  cursor: pointer;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  border-radius: 8px;
+  border: none;
+  box-shadow: 2px 2px 40px;
+  color: var(--stone-white);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.game-start button:hover {
+  background: linear-gradient(to right, #bdc3c7, #2c3e50);
+  background-color: white;
+  color: var(--font-red);
+}
+
+button:active {
+  transform: scale(0.96);
+  transition: transform 0.3s;
+}
+
+/* ship-placement, battle-section */
+
+.ship-placement,
+.battle-section {
+  background-image: linear-gradient(to right, #334d50, #cbcaa5, #334d50);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.background-swap {
+  background-image: linear-gradient(to right, #334d50, #cbcaa5, #334d50);
+  transition: background-image 1s ease-in-out;
+}
+
+.ship-placement h1,
+.battle-section h1,
+.game-over h1 {
+  margin-top: 10px;
+  font-size: 3rem;
+  font-family: treasure-font;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.ship-to-place {
+  margin-top: 80px;
+  color: var(--font-red);
+  font-weight: 900;
+  font-size: 1.6rem;
+}
+
+.ship-placement button,
+.game-over button {
+  margin-top: 20px;
+  height: 40px;
+  width: 200px;
+  cursor: pointer;
+  background: linear-gradient(to right, #f12711, #f5af19);
+  border-radius: 8px;
+  border: none;
+  box-shadow: 2px 2px 40px;
+  color: var(--stone-white);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* game-board */
+
+.game-board {
+  margin-top: 20px;
+  height: 500px;
+  width: 500px;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 1px;
+}
+
+.board-cell {
+  border: solid var(--stone-white) 1px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.invalid-location {
+  cursor: not-allowed;
+  background-color: var(--invalid-location);
+  opacity: 50%;
+}
+
+.attempt-place-ship {
+  background-color: var(--place-ship);
+  opacity: 50%;
+}
+
+.ship-placed-5 {
+  background: url(./assets/ships/galleon.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-4 {
+  background: url(./assets/ships/frigate.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-3 {
+  background: url(./assets/ships/brigantine.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-2 {
+  background: url(./assets/ships/schooner.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-1 {
+  background: url(./assets/ships/sloop.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.invalid-board {
+  cursor: not-allowed;
+}
+
+.hit {
+  cursor: not-allowed !important;
+}
+
+.hit::before {
+  content: '';
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--font-red);
+  position: absolute;
+}
+
+.miss {
+  cursor: not-allowed !important;
+}
+
+.miss::before {
+  content: '';
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--stone-white);
+  position: absolute;
+}
+
+.sunk-5 {
+  background: url(./assets/ships/galleon.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-4 {
+  background: url(./assets/ships/frigate.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-3 {
+  background: url(./assets/ships/brigantine.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-2 {
+  background: url(./assets/ships/schooner.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-1 {
+  background: url(./assets/ships/sloop.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.game-board img {
+  height: 40px;
+  width: 40px;
+}
+
+/* battle-section */
+
+.prompt {
+  margin-top: 20px;
+  height: 75px;
+  width: 60%;
+  border-radius: 25px;
+  background: linear-gradient(to right, #334d50, #cbcaa5);
+  color: white;
+  box-shadow: 2px 2px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+}
+
+.battle-ground {
+  margin-top: 80px;
+  height: 600px;
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.player-waters,
+.enemy-waters {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.battle-section h2 {
+  color: var(--font-red);
+}
+
+.battle-section .player-board .board-cell {
+  cursor: default;
+}
+
+.battle-section .ai-board .board-cell {
+  cursor: crosshair;
+}
+
+.battle-section .ai-board .board-cell:hover {
+  background-color: var(--aim);
+}
+
+/* game-over */
+
+.game-over {
+  flex-direction: column;
+  height: 100%;
+  background-image: linear-gradient(to right, #334d50, #cbcaa5, #334d50);
+  align-items: center;
+}
+
+.game-over h2 {
+  color: var(--stone-white);
+  font-size: 3rem;
+}
+
+.game-over .mid-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 200px;
+  gap: 50px;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-over button {
+  width: 300px;
+  height: 60px;
+  margin-top: 100px;
+}
+
+/* sound button */
+
+.sound img {
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+}
+
+.sound-start img {
+  height: 25px;
+  width: 25px;
+  cursor: pointer;
+}
+
+.landing .sound-start img {
+  height: 35px;
+  width: 35px;
+  cursor: pointer;
+}
+
+/* sections */
+
+.section {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.active-section {
+  opacity: 1;
+}
+
+.hidden-section {
+  display: none;
+}
