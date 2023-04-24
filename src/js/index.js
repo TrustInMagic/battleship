@@ -43,8 +43,8 @@ function handleAudio(audioFile, state, domButtons) {
     if (state === 'on') {
       audioFile.play();
       audioFile.loop = true;
-      button.src = 'assets/music/volume-off.svg';
-    } else button.src = 'assets/music/volume-on.svg';
+      button.src = './assets/music/volume-off.svg';
+    } else button.src = './assets/music/volume-on.svg';
   });
 
   domButtons.forEach((button) =>
@@ -56,7 +56,7 @@ function handleAudio(audioFile, state, domButtons) {
           button.classList.add('audio-off');
           body.classList.remove('audio-on');
           body.classList.add('audio-off');
-          button.src = 'assets/music/volume-on.svg';
+          button.src = './assets/music/volume-on.svg';
         });
       } else {
         domButtons.forEach((button) => {
@@ -65,7 +65,7 @@ function handleAudio(audioFile, state, domButtons) {
           button.classList.remove('audio-off');
           body.classList.add('audio-on');
           body.classList.remove('audio-off');
-          button.src = 'assets/music/volume-off.svg';
+          button.src = './assets/music/volume-off.svg';
         });
       }
     })
@@ -282,7 +282,7 @@ function playerAttack(firstCaptain, opponent, cell) {
   const attack = opponentBoardObj.receiveAttack(cell.cellX, cell.cellY);
   const domCell = findDomCellAtCoordinates(cell.cellX, cell.cellY, 'enemy');
 
-  playSoundEffect('assets/music/cannon.mp3');
+  playSoundEffect('./assets/music/cannon.mp3');
 
   if (attack === 'game-over') {
     domCell.classList.add('hit');
@@ -296,7 +296,7 @@ function playerAttack(firstCaptain, opponent, cell) {
       const typeWriterIndex = 0;
       typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
-        playSoundEffect('assets/music/hit.mp3');
+        playSoundEffect('./assets/music/hit.mp3');
         addMissHit(domCell, 'hit');
       }, 1000);
     }
@@ -309,7 +309,7 @@ function playerAttack(firstCaptain, opponent, cell) {
       const typeWriterIndex = 0;
       typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
-        playSoundEffect('assets/music/hit.mp3');
+        playSoundEffect('./assets/music/hit.mp3');
         addMissHit(domCell, 'hit');
         markSunkShip(shipLength, 'opponent');
       }, 1000);
@@ -320,7 +320,7 @@ function playerAttack(firstCaptain, opponent, cell) {
       const typeWriterIndex = 0;
       typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
-        playSoundEffect('assets/music/miss.mp3');
+        playSoundEffect('./assets/music/miss.mp3');
         addMissHit(domCell, 'miss');
       }, 1200);
     }
@@ -339,7 +339,7 @@ function opponentAttack(attacker, opponent) {
   const attack = opponentBoardObj.receiveAttack(randCell.x, randCell.y);
   const domCell = findDomCellAtCoordinates(randCell.x, randCell.y, 'player');
 
-  playSoundEffect('assets/music/cannon.mp3');
+  playSoundEffect('./assets/music/cannon.mp3');
 
   if (attack === 'game-over') {
     domCell.classList.add('hit');
@@ -353,7 +353,7 @@ function opponentAttack(attacker, opponent) {
       const typeWriterIndex = 0;
       typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
-        playSoundEffect('assets/music/hit.mp3');
+        playSoundEffect('./assets/music/hit.mp3');
         addMissHit(domCell, 'hit');
       }, 1000);
     }
@@ -374,7 +374,7 @@ function opponentAttack(attacker, opponent) {
       const typeWriterIndex = 0;
       typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
-        playSoundEffect('assets/music/miss.mp3');
+        playSoundEffect('./assets/music/miss.mp3');
         addMissHit(domCell, 'miss');
       }, 1200);
     }
