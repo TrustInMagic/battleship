@@ -12,8 +12,8 @@ export function displayGameBoard(board, domElement, player) {
         const shipLength = cell.heldShip.length;
         cellDom.setAttribute('data-ship', shipLength);
         // display the ships on the board only for human player
-        if (player === 'player') 
-        cellDom.classList.add(`ship-placed-${shipLength}`);
+        if (player === 'player')
+          cellDom.classList.add(`ship-placed-${shipLength}`);
       }
       domElement.appendChild(cellDom);
     }
@@ -110,46 +110,23 @@ function markAttemptToPlaceShip(cells) {
   });
 }
 
-export function switchSection(section) {
-  const landingSection = document.querySelector('.landing');
-  const shipPlacement = document.querySelector('.ship-placement');
-  const battleSection = document.querySelector('.battle-section');
-  const gameOver = document.querySelector('.game-over');
-
-  if (section === 'landing') {
-    shipPlacement.style.cssText = 'display: none';
-    battleSection.style.cssText = 'display: none';
-    gameOver.style.cssText = 'display: none';
-    landingSection.style.cssText = 'display: flex';
-  }
-
-  if (section === 'ship-placement') {
-    landingSection.style.cssText = 'display: none';
-    shipPlacement.style.cssText = 'display: flex';
-    battleSection.style.cssText = 'display: none';
-    gameOver.style.cssText = 'display: none';
-  }
-
-  if (section === 'battle-section') {
-    landingSection.style.cssText = 'display: none';
-    shipPlacement.style.cssText = 'display: none';
-    battleSection.style.cssText = 'display: flex';
-    gameOver.style.cssText = 'display: none';
-  }
-
-  if (section === 'game-over') {
-    landingSection.style.cssText = 'display: none';
-    shipPlacement.style.cssText = 'display: none';
-    battleSection.style.cssText = 'display: none';
-    gameOver.style.cssText = 'display: flex';
-  }
-}
-
-export function transitionBackground() {
-  const shipPlacement = document.querySelector('.ship-placement');
-  const battleSection = document.querySelector('.battle-section');
-  shipPlacement.classList.add('background-swap');
-  battleSection.classList.add('background-swap');
+export function showSection(sectionIndex) {
+  const sections = document.querySelectorAll('.section');
+  sections.forEach((section, index) => {
+    if (index === sectionIndex) {
+      section.classList.add('active-section');
+      section.classList.remove('hidden-section');
+    } else {
+      section.classList.remove('active-section');
+      section.addEventListener(
+        'transitionend',
+        () => {
+          section.classList.add('hidden-section');
+        },
+        { once: true }
+      );
+    }
+  });
 }
 
 export function placeShipDom(cells) {

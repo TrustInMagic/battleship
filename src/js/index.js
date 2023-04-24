@@ -1,19 +1,17 @@
 import { Player } from './models/player';
 import {
   displayGameBoard,
-  switchSection,
-  transitionBackground,
   attemptShipPlacementDom,
   placeShipDom,
   findDomCellAtCoordinates,
   markSunkShip,
   removeDomOldBoard,
+  showSection,
 } from './dom/dom-methods';
 
 const startGame = () => {
   const startForm = document.querySelector('.game-start');
-  switchSection('landing');
-  transitionBackground('landing');
+  showSection(0);
 
   stopAudioWaves();
   const intro = document.querySelector('body audio');
@@ -85,8 +83,7 @@ function stopAudioWaves() {
 }
 
 function runShipPlacementSection(callback) {
-  switchSection('ship-placement');
-  transitionBackground();
+  showSection(1);
 
   const nameInput = document.querySelector('.game-start input');
   const nameSpan = document.querySelector('.ship-to-place .player-name');
@@ -215,8 +212,7 @@ function generateValidRandomShipCoords(length, board) {
 }
 
 function runBattleSection(firstCaptain, secondCaptain) {
-  switchSection('battle-section');
-  transitionBackground();
+  showSection(2);
 
   stopAudioIntro();
   const waveSound = document.querySelector('.battle-section audio');
@@ -257,12 +253,24 @@ function playGame(firstCaptain, secondCaptain) {
       awaitedTurn = false;
 
       setTimeout(() => {
-        if (!opponentAttack(secondCaptain, firstCaptain))
+        while (!opponentAttack(secondCaptain, firstCaptain))
           opponentAttack(secondCaptain, firstCaptain);
-        awaitedTurn = true;
+        setTimeout(() => {
+          awaitedTurn = true;
+        }, 2500);
       }, 3000);
     });
   });
+}
+
+function typeWriter(domElement, text, index) {
+  if (text && typeof text === 'string' && index < text.length) {
+    domElement.innerHTML += text.charAt(index);
+    index++;
+    setTimeout(function () {
+      typeWriter(domElement, text, index);
+    }, 40);
+  }
 }
 
 function playerAttack(firstCaptain, opponent, cell) {
@@ -283,25 +291,38 @@ function playerAttack(firstCaptain, opponent, cell) {
     return false;
   } else {
     if (attack === 'hit') {
-      prompt.textContent = `You fire a shot in enemy waters ... and hit!`;
-      domCell?.classList.add('hit');
+      prompt.innerHTML = '';
+      const text = `You fire a shot in enemy waters ... and hit!`;
+      const typeWriterIndex = 0;
+      typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
         playSoundEffect('../src/assets/music/hit.mp3');
+        addMissHit(domCell, 'hit');
       }, 1000);
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
       const shipLength = attack.length;
       const shipName = getShipName(shipLength);
-      prompt.textContent = `You managed to sink ${opponentName}'s ${shipName} fleet. Good job!`;
-      markSunkShip(shipLength, 'opponent');
+      prompt.innerHTML = '';
+      const text = `You managed to sink ${opponentName}'s ${shipName} fleet. Good job!`;
+      const typeWriterIndex = 0;
+      typeWriter(prompt, text, typeWriterIndex);
+      setTimeout(() => {
+        playSoundEffect('../src/assets/music/hit.mp3');
+        addMissHit(domCell, 'hit');
+        markSunkShip(shipLength, 'opponent');
+      }, 1000);
     }
     if (attack === 'miss') {
-      prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
-      domCell?.classList.add('miss');
+      prompt.innerHTML = '';
+      const text = `You fire a shot in enemy waters ... and miss!`;
+      const typeWriterIndex = 0;
+      typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
         playSoundEffect('../src/assets/music/miss.mp3');
-      }, 1500);
+        addMissHit(domCell, 'miss');
+      }, 1200);
     }
   }
 
@@ -327,28 +348,43 @@ function opponentAttack(attacker, opponent) {
     return false;
   } else {
     if (attack === 'hit') {
-      prompt.textContent = `${name} shoots a fire in your waters ... and hits!`;
-      domCell?.classList.add('hit');
+      prompt.innerHTML = '';
+      const text = `${name} shoots a fire in your waters ... and hits!`;
+      const typeWriterIndex = 0;
+      typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
         playSoundEffect('../src/assets/music/hit.mp3');
+        addMissHit(domCell, 'hit');
       }, 1000);
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
       const shipLength = attack.length;
       const shipName = getShipName(shipLength);
-      prompt.textContent = `Oh no, your ${shipName} fleet has been sunk!`;
+      prompt.innerHTML = '';
+
+      const text = `Oh no, your ${shipName} fleet has been sunk!`;
+      const typeWriterIndex = 0;
+      typeWriter(prompt, text, typeWriterIndex);
       markSunkShip(shipLength, 'player');
     }
     if (attack === 'miss') {
-      prompt.textContent = `${name} shoots a fire in your waters ... and misses!`;
-      domCell?.classList.add('miss');
+      prompt.innerHTML = '';
+      const text = `${name} shoots a fire in your waters ... and misses!`;
+      const typeWriterIndex = 0;
+      typeWriter(prompt, text, typeWriterIndex);
       setTimeout(() => {
         playSoundEffect('../src/assets/music/miss.mp3');
-      }, 1500);
+        addMissHit(domCell, 'miss');
+      }, 1200);
     }
   }
   return { attack, randCell };
+}
+
+function addMissHit(cell, attack) {
+  if (attack === 'miss') cell?.classList.add('miss');
+  if (attack === 'hit') cell?.classList.add('hit');
 }
 
 function getShipName(length) {
@@ -374,7 +410,7 @@ function generateRandomAttack() {
 }
 
 function gameOver(winner) {
-  switchSection('game-over');
+  showSection(3);
   removeDomOldBoard();
 
   const winnerDom = document.querySelector('.game-over .winner');
