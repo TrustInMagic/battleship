@@ -18,7 +18,7 @@ const startGame = () => {
   stopAudioWaves();
   const intro = document.querySelector('body audio');
   const audioDomButton = document.querySelectorAll('.sound-start img');
-  handleAudio(intro,'on', audioDomButton);
+  handleAudio(intro, 'on', audioDomButton);
 
   startForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -29,11 +29,22 @@ const startGame = () => {
   });
 };
 
+function playSoundEffect(src) {
+  const body = document.querySelector('body');
+  if (body.getAttribute('class') === 'audio-on') {
+    const audio = new Audio(src);
+    audio.play();
+  }
+}
+
 function handleAudio(audioFile, state, domButtons) {
+  const body = document.querySelector('body');
+
   audioFile.pause();
   domButtons.forEach((button) => {
     if (state === 'on') {
-      audioFile.play()
+      audioFile.play();
+      audioFile.loop = true;
       button.src = '../src/assets/music/volume-off.svg';
     } else button.src = '../src/assets/music/volume-on.svg';
   });
@@ -45,6 +56,8 @@ function handleAudio(audioFile, state, domButtons) {
           audioFile.pause();
           button.classList.remove('audio-on');
           button.classList.add('audio-off');
+          body.classList.remove('audio-on');
+          body.classList.add('audio-off');
           button.src = '../src/assets/music/volume-on.svg';
         });
       } else {
@@ -52,6 +65,8 @@ function handleAudio(audioFile, state, domButtons) {
           audioFile.play();
           button.classList.add('audio-on');
           button.classList.remove('audio-off');
+          body.classList.add('audio-on');
+          body.classList.remove('audio-off');
           button.src = '../src/assets/music/volume-off.svg';
         });
       }
@@ -205,8 +220,8 @@ function runBattleSection(firstCaptain, secondCaptain) {
 
   stopAudioIntro();
   const waveSound = document.querySelector('.battle-section audio');
-  const domButtons = document.querySelectorAll('.sound img')
-  handleAudio(waveSound, 'on', domButtons)
+  const domButtons = document.querySelectorAll('.sound img');
+  handleAudio(waveSound, 'on', domButtons);
 
   const playerBoardObj = firstCaptain.playerBoard;
   const opponentBoardObj = secondCaptain.playerBoard;
@@ -216,7 +231,7 @@ function runBattleSection(firstCaptain, secondCaptain) {
   const playerBoardDom = document.querySelector('.player-board');
   const opponentBoardDom = document.querySelector('.ai-board');
 
-  displayGameBoard(playerBoard, playerBoardDom);
+  displayGameBoard(playerBoard, playerBoardDom, 'player');
   displayGameBoard(opponentBoard, opponentBoardDom);
 
   playGame(firstCaptain, secondCaptain);
@@ -245,7 +260,7 @@ function playGame(firstCaptain, secondCaptain) {
         if (!opponentAttack(secondCaptain, firstCaptain))
           opponentAttack(secondCaptain, firstCaptain);
         awaitedTurn = true;
-      }, 100);
+      }, 3000);
     });
   });
 }
@@ -259,6 +274,8 @@ function playerAttack(firstCaptain, opponent, cell) {
   const attack = opponentBoardObj.receiveAttack(cell.cellX, cell.cellY);
   const domCell = findDomCellAtCoordinates(cell.cellX, cell.cellY, 'enemy');
 
+  playSoundEffect('../src/assets/music/cannon.mp3');
+
   if (attack === 'game-over') {
     domCell.classList.add('hit');
     gameOver(name);
@@ -268,6 +285,9 @@ function playerAttack(firstCaptain, opponent, cell) {
     if (attack === 'hit') {
       prompt.textContent = `You fire a shot in enemy waters ... and hit!`;
       domCell?.classList.add('hit');
+      setTimeout(() => {
+        playSoundEffect('../src/assets/music/hit.mp3');
+      }, 1000);
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
@@ -279,6 +299,9 @@ function playerAttack(firstCaptain, opponent, cell) {
     if (attack === 'miss') {
       prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
       domCell?.classList.add('miss');
+      setTimeout(() => {
+        playSoundEffect('../src/assets/music/miss.mp3');
+      }, 1500);
     }
   }
 
@@ -295,6 +318,8 @@ function opponentAttack(attacker, opponent) {
   const attack = opponentBoardObj.receiveAttack(randCell.x, randCell.y);
   const domCell = findDomCellAtCoordinates(randCell.x, randCell.y, 'player');
 
+  playSoundEffect('../src/assets/music/cannon.mp3');
+
   if (attack === 'game-over') {
     domCell.classList.add('hit');
     gameOver(opponentName);
@@ -304,6 +329,9 @@ function opponentAttack(attacker, opponent) {
     if (attack === 'hit') {
       prompt.textContent = `${name} shoots a fire in your waters ... and hits!`;
       domCell?.classList.add('hit');
+      setTimeout(() => {
+        playSoundEffect('../src/assets/music/hit.mp3');
+      }, 1000);
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
@@ -315,6 +343,9 @@ function opponentAttack(attacker, opponent) {
     if (attack === 'miss') {
       prompt.textContent = `${name} shoots a fire in your waters ... and misses!`;
       domCell?.classList.add('miss');
+      setTimeout(() => {
+        playSoundEffect('../src/assets/music/miss.mp3');
+      }, 1500);
     }
   }
   return { attack, randCell };

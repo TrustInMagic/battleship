@@ -16,6 +16,7 @@ body {
   --place-ship: #22c55e;
   --ship-placed: #166534;
   --ship-sunk: #3b82f6;
+  --aim: #bbf7d0;
 }
 
 @font-face {
@@ -48,7 +49,7 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100%
+  width: 100%;
 }
 
 .landing h1 {
@@ -172,7 +173,6 @@ button:active {
   font-weight: 600;
 }
 
-
 /* game-board */
 
 .game-board {
@@ -188,6 +188,9 @@ button:active {
 .board-cell {
   border: solid var(--stone-white) 1px;
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .invalid-location {
@@ -201,8 +204,29 @@ button:active {
   opacity: 50%;
 }
 
-.ship-placed {
-  background-color: var(--ship-placed);
+.ship-placed-5 {
+  background: url(./assets/ships/galleon.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-4 {
+  background: url(./assets/ships/frigate.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-3 {
+  background: url(./assets/ships/brigantine.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-2 {
+  background: url(./assets/ships/schooner.svg) no-repeat center center;
+  background-size: 40px 40px;
+}
+
+.ship-placed-1 {
+  background: url(./assets/ships/sloop.svg) no-repeat center center;
+  background-size: 40px 40px;
 }
 
 .invalid-board {
@@ -210,18 +234,64 @@ button:active {
 }
 
 .hit {
-  background-color: var(--font-red) !important;
   cursor: not-allowed !important;
+}
+
+.hit::before {
+  content: '';
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--font-red);
+  position: absolute;
 }
 
 .miss {
-  background-color: var(--stone-white) !important;
   cursor: not-allowed !important;
 }
 
-.sunk {
-  background-color: var(--ship-sunk) !important;
-  cursor: not-allowed !important;
+.miss::before {
+  content: '';
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: var(--stone-white);
+  position: absolute;
+}
+
+.sunk-5 {
+  background: url(./assets/ships/galleon.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-4 {
+  background: url(./assets/ships/frigate.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-3 {
+  background: url(./assets/ships/brigantine.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-2 {
+  background: url(./assets/ships/schooner.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.sunk-1 {
+  background: url(./assets/ships/sloop.svg) no-repeat center center;
+  background-size: 40px 40px;
+  opacity: 50%;
+}
+
+.game-board img {
+  height: 40px;
+  width: 40px;
 }
 
 /* battle-section */
@@ -269,11 +339,7 @@ button:active {
 }
 
 .battle-section .ai-board .board-cell:hover {
-  background-color: var(--place-ship);
-}
-
-.battle-section .board-cell[data-ship] {
-  background-color: var(--ship-placed);
+  background-color: var(--aim);
 }
 
 /* game-over */

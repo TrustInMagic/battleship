@@ -1,4 +1,4 @@
-export function displayGameBoard(board, domElement) {
+export function displayGameBoard(board, domElement, player) {
   domElement.innerHTML = '';
 
   for (let row of board) {
@@ -11,6 +11,9 @@ export function displayGameBoard(board, domElement) {
       if (cell.heldShip !== null) {
         const shipLength = cell.heldShip.length;
         cellDom.setAttribute('data-ship', shipLength);
+        // display the ships on the board only for human player
+        if (player === 'player') 
+        cellDom.classList.add(`ship-placed-${shipLength}`);
       }
       domElement.appendChild(cellDom);
     }
@@ -151,7 +154,11 @@ export function transitionBackground() {
 
 export function placeShipDom(cells) {
   cells.forEach((cell) => {
-    cell.classList.add('ship-placed');
+    if (cells.length === 5) cell.classList.add('ship-placed-5');
+    if (cells.length === 4) cell.classList.add('ship-placed-4');
+    if (cells.length === 3) cell.classList.add('ship-placed-3');
+    if (cells.length === 2) cell.classList.add('ship-placed-2');
+    if (cells.length === 1) cell.classList.add('ship-placed-1');
   });
 }
 
@@ -192,7 +199,13 @@ export function markSunkShip(shipLength, player) {
 
   cellsDom.forEach((cell) => {
     const shipDom = Number(cell.getAttribute('data-ship'));
-    if (shipDom === shipLength) cell.classList.add('sunk');
+    if (shipDom === shipLength) {
+      if (shipLength === 5) cell.classList.add('sunk-5');
+      if (shipLength === 4) cell.classList.add('sunk-4');
+      if (shipLength === 3) cell.classList.add('sunk-3');
+      if (shipLength === 2) cell.classList.add('sunk-2');
+      if (shipLength === 1) cell.classList.add('sunk-1');
+    }
   });
 }
 
