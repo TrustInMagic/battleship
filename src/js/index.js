@@ -7,13 +7,18 @@ import {
   placeShipDom,
   findDomCellAtCoordinates,
   markSunkShip,
-  removeDomOldBoard
+  removeDomOldBoard,
 } from './dom/dom-methods';
 
 const startGame = () => {
   const startForm = document.querySelector('.game-start');
   switchSection('landing');
-  transitionBackground('landing')
+  transitionBackground('landing');
+
+  stopAudioWaves();
+  const intro = document.querySelector('body audio');
+  const audioDomButton = document.querySelectorAll('.sound-start img');
+  handleAudio(intro,'on', audioDomButton);
 
   startForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -23,6 +28,46 @@ const startGame = () => {
     });
   });
 };
+
+function handleAudio(audioFile, state, domButtons) {
+  audioFile.pause();
+  domButtons.forEach((button) => {
+    if (state === 'on') {
+      audioFile.play()
+      button.src = '../src/assets/music/volume-off.svg';
+    } else button.src = '../src/assets/music/volume-on.svg';
+  });
+
+  domButtons.forEach((button) =>
+    button.addEventListener('click', () => {
+      if (button.getAttribute('class') === 'audio-on') {
+        domButtons.forEach((button) => {
+          audioFile.pause();
+          button.classList.remove('audio-on');
+          button.classList.add('audio-off');
+          button.src = '../src/assets/music/volume-on.svg';
+        });
+      } else {
+        domButtons.forEach((button) => {
+          audioFile.play();
+          button.classList.add('audio-on');
+          button.classList.remove('audio-off');
+          button.src = '../src/assets/music/volume-off.svg';
+        });
+      }
+    })
+  );
+}
+
+function stopAudioIntro() {
+  const audio = document.querySelector('body audio');
+  audio.pause();
+}
+
+function stopAudioWaves() {
+  const audio = document.querySelector('.battle-section audio');
+  audio.pause();
+}
 
 function runShipPlacementSection(callback) {
   switchSection('ship-placement');
@@ -157,6 +202,12 @@ function generateValidRandomShipCoords(length, board) {
 function runBattleSection(firstCaptain, secondCaptain) {
   switchSection('battle-section');
   transitionBackground();
+
+  stopAudioIntro();
+  const waveSound = document.querySelector('.battle-section audio');
+  const domButtons = document.querySelectorAll('.sound img')
+  handleAudio(waveSound, 'on', domButtons)
+
   const playerBoardObj = firstCaptain.playerBoard;
   const opponentBoardObj = secondCaptain.playerBoard;
 
@@ -202,8 +253,8 @@ function playGame(firstCaptain, secondCaptain) {
 function playerAttack(firstCaptain, opponent, cell) {
   const prompt = document.querySelector('.prompt');
   const opponentBoardObj = opponent.playerBoard;
-  const opponentName = opponent.name
-  const name = firstCaptain.name
+  const opponentName = opponent.name;
+  const name = firstCaptain.name;
 
   const attack = opponentBoardObj.receiveAttack(cell.cellX, cell.cellY);
   const domCell = findDomCellAtCoordinates(cell.cellX, cell.cellY, 'enemy');
@@ -223,7 +274,7 @@ function playerAttack(firstCaptain, opponent, cell) {
       const shipLength = attack.length;
       const shipName = getShipName(shipLength);
       prompt.textContent = `You managed to sink ${opponentName}'s ${shipName} fleet. Good job!`;
-      markSunkShip(shipLength, 'opponent')
+      markSunkShip(shipLength, 'opponent');
     }
     if (attack === 'miss') {
       prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
@@ -238,7 +289,7 @@ function opponentAttack(attacker, opponent) {
   const prompt = document.querySelector('.prompt');
   const opponentBoardObj = opponent.playerBoard;
   const name = attacker.name;
-  const opponentName = opponent.name
+  const opponentName = opponent.name;
 
   const randCell = generateRandomAttack();
   const attack = opponentBoardObj.receiveAttack(randCell.x, randCell.y);
@@ -293,13 +344,13 @@ function generateRandomAttack() {
 
 function gameOver(winner) {
   switchSection('game-over');
-  removeDomOldBoard()
+  removeDomOldBoard();
 
   const winnerDom = document.querySelector('.game-over .winner');
-  const playAgainButton = document.querySelector('.game-over button')
+  const playAgainButton = document.querySelector('.game-over button');
   winnerDom.textContent = winner;
 
-  playAgainButton.addEventListener('click', startGame)
+  playAgainButton.addEventListener('click', startGame);
 }
 
 startGame();
