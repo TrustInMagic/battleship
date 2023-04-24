@@ -2,7 +2,7 @@ import { Ship } from './ship';
 import { Cell } from './cell';
 
 export const GameBoard = () => {
-  const board = [];
+  let board = [];
   const rows = 10;
   const cols = 10;
   const ships = [];
@@ -173,9 +173,15 @@ export const GameBoard = () => {
       0
     );
 
-    console.log(hits.length, cellNumberHoldingBoats)
+    if (hits.length === cellNumberHoldingBoats) {
+      resetBoard();
+      return true;
+    }
+  };
 
-    if (hits.length === cellNumberHoldingBoats) return true;
+  const resetBoard = () => {
+    board = [];
+    generateBoard();
   };
 
   return {

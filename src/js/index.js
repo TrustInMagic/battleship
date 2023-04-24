@@ -6,11 +6,13 @@ import {
   attemptShipPlacementDom,
   placeShipDom,
   findDomCellAtCoordinates,
-  markSunkShip
+  markSunkShip,
+  removeDomOldBoard
 } from './dom/dom-methods';
 
 const startGame = () => {
   const startForm = document.querySelector('.game-start');
+  switchSection('landing');
   transitionBackground('landing')
 
   startForm.addEventListener('submit', (e) => {
@@ -69,7 +71,7 @@ function handleCellEvents(firstCaptain, ships, callback) {
       Number(cellY)
     );
 
-    domCell.addEventListener('mouseenter', () => {
+    domCell.addEventListener('mousemove', () => {
       if (shipsPlacedIdx > 4) return;
       const shipToPlace = ships[shipsPlacedIdx];
       attemptShipPlacementDom(shipToPlace, axis, boardCell, boardObj);
@@ -192,7 +194,7 @@ function playGame(firstCaptain, secondCaptain) {
         if (!opponentAttack(secondCaptain, firstCaptain))
           opponentAttack(secondCaptain, firstCaptain);
         awaitedTurn = true;
-      }, 500);
+      }, 100);
     });
   });
 }
@@ -214,7 +216,7 @@ function playerAttack(firstCaptain, opponent, cell) {
   } else {
     if (attack === 'hit') {
       prompt.textContent = `You fire a shot in enemy waters ... and hit!`;
-      domCell.classList.add('hit');
+      domCell?.classList.add('hit');
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
@@ -225,7 +227,7 @@ function playerAttack(firstCaptain, opponent, cell) {
     }
     if (attack === 'miss') {
       prompt.textContent = `You fire a shot in enemy waters ... and miss!`;
-      domCell.classList.add('miss');
+      domCell?.classList.add('miss');
     }
   }
 
@@ -250,7 +252,7 @@ function opponentAttack(attacker, opponent) {
   } else {
     if (attack === 'hit') {
       prompt.textContent = `${name} shoots a fire in your waters ... and hits!`;
-      domCell.classList.add('hit');
+      domCell?.classList.add('hit');
     }
     // attack returns the boat object in case of sunk
     if (typeof attack === 'object') {
@@ -261,7 +263,7 @@ function opponentAttack(attacker, opponent) {
     }
     if (attack === 'miss') {
       prompt.textContent = `${name} shoots a fire in your waters ... and misses!`;
-      domCell.classList.add('miss');
+      domCell?.classList.add('miss');
     }
   }
   return { attack, randCell };
@@ -291,7 +293,7 @@ function generateRandomAttack() {
 
 function gameOver(winner) {
   switchSection('game-over');
-  transitionBackground();
+  removeDomOldBoard()
 
   const winnerDom = document.querySelector('.game-over .winner');
   const playAgainButton = document.querySelector('.game-over button')

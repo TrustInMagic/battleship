@@ -1,4 +1,6 @@
 export function displayGameBoard(board, domElement) {
+  domElement.innerHTML = '';
+
   for (let row of board) {
     for (let cellArr of row) {
       const cell = cellArr[0];
@@ -112,7 +114,6 @@ export function switchSection(section) {
   const gameOver = document.querySelector('.game-over');
 
   if (section === 'landing') {
-    landingSection.style.cssText = 'display: none';
     shipPlacement.style.cssText = 'display: none';
     battleSection.style.cssText = 'display: none';
     gameOver.style.cssText = 'display: none';
@@ -122,12 +123,15 @@ export function switchSection(section) {
   if (section === 'ship-placement') {
     landingSection.style.cssText = 'display: none';
     shipPlacement.style.cssText = 'display: flex';
+    battleSection.style.cssText = 'display: none';
+    gameOver.style.cssText = 'display: none';
   }
 
   if (section === 'battle-section') {
     landingSection.style.cssText = 'display: none';
     shipPlacement.style.cssText = 'display: none';
     battleSection.style.cssText = 'display: flex';
+    gameOver.style.cssText = 'display: none';
   }
 
   if (section === 'game-over') {
@@ -146,7 +150,9 @@ export function transitionBackground() {
 }
 
 export function placeShipDom(cells) {
-  cells.forEach((cell) => cell.classList.add('ship-placed'));
+  cells.forEach((cell) => {
+    cell.classList.add('ship-placed');
+  });
 }
 
 function clearDomCellInvalidity(cell) {
@@ -188,4 +194,10 @@ export function markSunkShip(shipLength, player) {
     const shipDom = Number(cell.getAttribute('data-ship'));
     if (shipDom === shipLength) cell.classList.add('sunk');
   });
+}
+
+export function removeDomOldBoard() {
+  const cellsDom = document.querySelectorAll('.board-cell');
+
+  cellsDom.forEach((cell) => cell.remove());
 }
