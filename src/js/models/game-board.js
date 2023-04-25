@@ -128,7 +128,7 @@ export const GameBoard = () => {
         const allBoatCells = [headCell, tailCell].concat(missingCells);
 
         allBoatCells.forEach((cell) => {
-          if (cell.heldShip !== null) valid = false;
+          if (cell?.heldShip !== null) valid = false;
         });
       }
     }

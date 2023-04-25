@@ -239,7 +239,7 @@ function playGame(firstCaptain, secondCaptain) {
   const playerName = firstCaptain.name;
   let awaitedTurn = true;
 
-  prompt.textContent = `Awaiting yer orders, Admiral ${playerName}!`;
+  prompt.textContent = `Awaiting yer orders, capt'n ${playerName}!`;
   opponentCells.forEach((cell) => {
     cell.addEventListener('click', () => {
       if (awaitedTurn === false) return;
@@ -252,12 +252,24 @@ function playGame(firstCaptain, secondCaptain) {
       }
       awaitedTurn = false;
 
+      function computerTurn() {
+        const attacker = secondCaptain;
+        const opponent = firstCaptain;
+        const result = opponentAttack(attacker, opponent);
+
+        if (!result) {
+          setTimeout(() => {
+            computerTurn();
+          }, 200);
+        } else {
+          setTimeout(() => {
+            awaitedTurn = true;
+          }, 2500);
+        }
+      }
+
       setTimeout(() => {
-        while (!opponentAttack(secondCaptain, firstCaptain))
-          opponentAttack(secondCaptain, firstCaptain);
-        setTimeout(() => {
-          awaitedTurn = true;
-        }, 2500);
+        computerTurn();
       }, 3000);
     });
   });
@@ -286,7 +298,9 @@ function playerAttack(firstCaptain, opponent, cell) {
 
   if (attack === 'game-over') {
     domCell.classList.add('hit');
-    gameOver(name);
+    setTimeout(() => {
+      gameOver(name);
+    }, 2000);
   } else if (attack === 'invalid') {
     return false;
   } else {
@@ -343,7 +357,9 @@ function opponentAttack(attacker, opponent) {
 
   if (attack === 'game-over') {
     domCell.classList.add('hit');
-    gameOver(opponentName);
+    setTimeout(() => {
+      gameOver(opponentName);
+    }, 2000);
   } else if (attack === 'invalid') {
     return false;
   } else {
@@ -362,11 +378,14 @@ function opponentAttack(attacker, opponent) {
       const shipLength = attack.length;
       const shipName = getShipName(shipLength);
       prompt.innerHTML = '';
-
       const text = `Oh no, your ${shipName} fleet has been sunk!`;
       const typeWriterIndex = 0;
       typeWriter(prompt, text, typeWriterIndex);
-      markSunkShip(shipLength, 'player');
+      setTimeout(() => {
+        playSoundEffect('./assets/music/hit.mp3');
+        addMissHit(domCell, 'hit');
+        markSunkShip(shipLength, 'player');
+      }, 1000);
     }
     if (attack === 'miss') {
       prompt.innerHTML = '';
